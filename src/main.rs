@@ -1,6 +1,5 @@
 use std::num::NonZeroU32;
 use std::rc::Rc;
-use softbuffer::Buffer;
 use winit::event::{Event, WindowEvent};
 use winit::event_loop::{ControlFlow, EventLoop};
 use winit::window::WindowBuilder;
