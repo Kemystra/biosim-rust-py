@@ -4,6 +4,15 @@ use winit::event::{Event, WindowEvent};
 use winit::event_loop::{ControlFlow, EventLoop};
 use winit::window::WindowBuilder;
 
+mod simulation;
+mod creature;
+mod genome;
+mod neuron;
+mod renderer;
+mod vector2d;
+
+use simulation::Simulation;
+
 fn main() {
     let event_loop = EventLoop::new().unwrap();
     let window = Rc::new(WindowBuilder::new().build(&event_loop).unwrap());
