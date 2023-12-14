@@ -9,22 +9,22 @@ pub struct Simulation {
 }
 
 impl Simulation {
-    fn new(field_width: usize, field_height: usize) -> Self {
+    pub fn new(field_width: usize, field_height: usize) -> Self {
         Self {
             field_width, field_height,
             creatures: vec![]
         }
     }
 
-    fn field_width(&self) -> usize {
+    pub fn field_width(&self) -> usize {
         self.field_width
     }
 
-    fn field_height(&self) -> usize {
+    pub fn field_height(&self) -> usize {
         self.field_height
     }
 
-    fn run(&mut self) {
+    pub fn run(&mut self) {
         
     }
 }
