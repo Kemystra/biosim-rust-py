@@ -7,5 +7,7 @@ edition = "2021"
 
 [dependencies]
 num = "0.4.1"
+rand = "0.8.5"
+rand_pcg = "0.3.1"
 softbuffer = "0.4.0"
 winit = "0.29.4"
