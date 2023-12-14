@@ -1,9 +1,9 @@
-use genome::Genome;
-use neuron::{Connection, InputNeuron, ActionNeuron, InternalNeuron};
-use vector2d::Vector2D;
+use crate::genome::Genome;
+use crate::neuron::{Connection, InputNeuron, ActionNeuron, InternalNeuron};
+use crate::vector2d::Vector2D;
 
 
-struct Creature {
+pub struct Creature {
     genome: Genome,
     position: Vector2D<usize>,
     connections: Vec<Connection>,
