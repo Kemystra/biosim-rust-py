@@ -12,6 +12,7 @@ mod renderer;
 mod vector2d;
 
 use simulation::Simulation;
+use renderer::SimRenderer;
 
 fn main() {
     let event_loop = EventLoop::new().unwrap();
@@ -36,7 +37,6 @@ fn main() {
                     .unwrap();
 
                 let mut buffer = surface.buffer_mut().unwrap();
-                color_buffer(&mut buffer, width, height);
                 buffer.present().unwrap();
             }
             Event::WindowEvent {
@@ -48,16 +48,4 @@ fn main() {
             _ => {}
         }
     }).unwrap();
-}
-
-fn color_buffer(buffer: &mut [u32], width: u32, height: u32) {
-    for index in 0..(width * height) {
-        let y = index / width;
-        let x = index % width;
-        let red = x % 255;
-        let green = y % 255;
-        let blue = (x * y) % 255;
-
-        buffer[index as usize] = blue | (green << 8) | (red << 16);
-    }
 }
