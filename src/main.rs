@@ -15,14 +15,19 @@ mod vector2d;
 use simulation::Simulation;
 use renderer::{Renderer, RendererBuilder};
 
-const VIEWPORT_WIDTH: u32 = 500;
-const VIEWPORT_HEIGHT: u32 = 500;
+const FIELD_WIDTH: usize = 100;
+const FIELD_HEIGHT: usize = 100;
+
+const BLOCK_WIDTH: usize = 5;
+const BLOCK_HEIGHT: usize = 5;
+
 
 fn main() {
+    let viewport_width = (FIELD_WIDTH * BLOCK_WIDTH) as u32;
+    let viewport_height = (FIELD_HEIGHT * BLOCK_HEIGHT) as u32;
+    let window_size = PhysicalSize::new(viewport_width, viewport_height);
+
     let event_loop = EventLoop::new().unwrap();
-
-    let window_size = PhysicalSize::new(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
-
     let window = Rc::new(WindowBuilder::new()
         .with_inner_size(window_size)
         .with_title("Neural Network, No Cap")
@@ -40,14 +45,16 @@ fn main() {
             Event::WindowEvent { window_id, event: WindowEvent::RedrawRequested } if window_id == window.id() => {
                 surface
                     .resize(
-                        NonZeroU32::new(VIEWPORT_WIDTH).unwrap(),
-                        NonZeroU32::new(VIEWPORT_HEIGHT).unwrap(),
+                        NonZeroU32::new(viewport_width).unwrap(),
+                        NonZeroU32::new(viewport_height).unwrap(),
                     )
                     .unwrap();
 
                 let mut buffer = surface.buffer_mut().unwrap();
                 buffer.present().unwrap();
+                println!("{:?}", elwt.control_flow());
             }
+
             Event::WindowEvent {
                 event: WindowEvent::CloseRequested,
                 window_id,
