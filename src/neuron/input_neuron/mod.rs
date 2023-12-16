@@ -1,5 +1,5 @@
 pub trait InputNeuron {
-    fn read_input() {
+    fn read_input(&self) {
 
     }
 }

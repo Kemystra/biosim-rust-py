@@ -1,5 +1,5 @@
 pub trait ActionNeuron {
-    fn perform_action() {
+    fn perform_action(&self) {
 
     }
 }
