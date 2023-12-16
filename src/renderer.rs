@@ -1,3 +1,7 @@
+use std::default::Default;
+use crate::simulation::Simulation;
+
+
 type Buffer<'a> = &'a mut [u32];
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -17,21 +21,41 @@ impl Color {
     }
 }
 
-pub struct SimRenderer {
-    width: usize,
-    height: usize,
+#[derive(Default)]
+struct RendererAttributes {
+    pub width: usize,
+    pub height: usize,
+
+    pub block_width: usize,
+    pub block_height: usize,
+    pub block_count_w: usize,
+    pub block_count_h: usize
 }
 
-impl SimRenderer {
-    pub fn new(width: usize, height: usize) -> Self {
+impl RendererAttributes {
+    pub fn renew_buffer_size(&mut self) {
+        self.width = self.block_width * self.block_count_w;
+        self.height = self.block_height * self.block_count_h;
+    }
+}
+
+pub struct Renderer {
+    attr: RendererAttributes
+}
+
+impl Renderer {
+    pub fn new(attr: RendererAttributes) -> Self {
         Self {
-            width,
-            height,
+            attr
         }
     }
 
+    pub fn render(&self, sim: &Simulation) {
+        
+    }
+
     pub fn plot_pixel<T: Into<usize>>(&self, buffer: Buffer, x: T, y: T, color: Color) {
-        buffer[x.into() + (y.into()*self.width)] = color.rgb_u32();
+        buffer[x.into() + (y.into()*self.attr.width)] = color.rgb_u32();
     }
 
     pub fn bresenham_line(
@@ -66,6 +90,40 @@ impl SimRenderer {
                 curr_y += sy
             }
         }
+    }
+}
+
+pub struct RendererBuilder {
+    attr: RendererAttributes
+}
+
+impl RendererBuilder {
+    pub fn new() -> Self {
+        Self {
+            attr: RendererAttributes::default()
+        }
+    }
+
+    pub fn build(&self) -> Renderer {
+        Renderer::new(self.attr)
+    }
+
+    pub fn with_block_size(&mut self, w: usize, h: usize) -> Self {
+        self.attr.block_width = w;
+        self.attr.block_height = h;
+
+        self.attr.renew_buffer_size();
+
+        *self
+    }
+
+    pub fn with_field_size(&mut self, w: usize, h: usize) -> Self {
+        self.attr.block_count_w = w;
+        self.attr.block_count_h = h;
+
+        self.attr.renew_buffer_size();
+
+        *self
     }
 }
 
