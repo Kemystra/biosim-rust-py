@@ -52,7 +52,7 @@ pub struct Renderer {
 }
 
 impl Renderer {
-    pub fn new(attr: RendererAttributes) -> Self {
+    fn new(attr: RendererAttributes) -> Self {
         Self {
             attr
         }
@@ -112,26 +112,23 @@ impl RendererBuilder {
         }
     }
 
-    pub fn build(&self) -> Renderer {
+    pub fn build(mut self) -> Renderer {
+        self.attr.renew_buffer_size();
         Renderer::new(self.attr)
     }
 
-    pub fn with_block_size(&mut self, w: usize, h: usize) -> Self {
+    pub fn with_block_size(mut self, w: usize, h: usize) -> Self {
         self.attr.block_width = w;
         self.attr.block_height = h;
 
-        self.attr.renew_buffer_size();
-
-        *self
+        self
     }
 
-    pub fn with_field_size(&mut self, w: usize, h: usize) -> Self {
+    pub fn with_field_size(mut self, w: usize, h: usize) -> Self {
         self.attr.block_count_w = w;
         self.attr.block_count_h = h;
 
-        self.attr.renew_buffer_size();
-
-        *self
+        self
     }
 }
 
