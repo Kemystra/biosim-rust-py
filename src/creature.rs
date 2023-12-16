@@ -1,5 +1,10 @@
 use crate::genome::Genome;
-use crate::neuron::{Connection, InputNeuron, ActionNeuron, InternalNeuron};
+
+use crate::neuron::{Connection, input_neuron, action_neuron, internal_neuron};
+use input_neuron::InputNeuron;
+use action_neuron::ActionNeuron;
+use internal_neuron::InternalNeuron;
+
 use crate::vector2d::Vector2D;
 
 
