@@ -6,7 +6,7 @@ use crate::simulation::Simulation;
 
 type Buffer<'a> = &'a mut [u32];
 
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Default, Clone, Copy)]
 pub struct Color(u32);
 
 impl Color {
@@ -37,11 +37,14 @@ struct RendererAttributes {
     pub block_width: usize,
     pub block_height: usize,
     pub block_count_w: usize,
-    pub block_count_h: usize
+    pub block_count_h: usize,
+
+    pub field_color: Color,
+    pub border_color: Color
 }
 
 impl RendererAttributes {
-    pub fn renew_buffer_size(&mut self) {
+    pub fn renew_total_size(&mut self) {
         self.width = self.block_width * self.block_count_w;
         self.height = self.block_height * self.block_count_h;
     }
@@ -59,7 +62,7 @@ impl Renderer {
     }
 
     pub fn render(&self, sim: &Simulation) {
-        
+
     }
 
     pub fn plot_pixel<T: Into<usize>>(&self, buffer: Buffer, x: T, y: T, color: Color) {
@@ -128,6 +131,16 @@ impl RendererBuilder {
         self.attr.block_count_w = w;
         self.attr.block_count_h = h;
 
+        self
+    }
+
+    pub fn with_field_color(mut self, color: Color) -> Self {
+        self.attr.field_color = color;
+        self
+    }
+
+    pub fn with_border_color(mut self, color: Color) -> Self {
+        self.attr.border_color = color;
         self
     }
 }
