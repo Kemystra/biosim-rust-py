@@ -13,7 +13,7 @@ mod renderer;
 mod vector2d;
 
 use simulation::Simulation;
-use renderer::SimRenderer;
+use renderer::{Renderer, RendererBuilder};
 
 const VIEWPORT_WIDTH: u32 = 500;
 const VIEWPORT_HEIGHT: u32 = 500;
@@ -31,10 +31,10 @@ fn main() {
     let context = softbuffer::Context::new(window.clone()).unwrap();
     let mut surface = softbuffer::Surface::new(&context, window.clone()).unwrap();
 
-    let renderer = SimRenderer::new(VIEWPORT_WIDTH as usize, VIEWPORT_HEIGHT as usize);
+    let renderer = RendererBuilder::new().build();
 
     event_loop.run(move |event, elwt| {
-        elwt.set_control_flow(ControlFlow::Wait);
+        elwt.set_control_flow(ControlFlow::Poll);
 
         match event {
             Event::WindowEvent { window_id, event: WindowEvent::RedrawRequested } if window_id == window.id() => {
