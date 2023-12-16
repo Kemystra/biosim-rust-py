@@ -113,7 +113,7 @@ impl RendererBuilder {
     }
 
     pub fn build(mut self) -> Renderer {
-        self.attr.renew_buffer_size();
+        self.attr.renew_total_size();
         Renderer::new(self.attr)
     }
 
@@ -149,5 +149,32 @@ mod tests {
         let expected = 100_u32 | (234 << 8) | (88 << 16);
 
         assert_eq!(color.rgb_u32(), expected);
+    }
+
+    #[test]
+    fn recalculate_total_screensize() {
+        let mut attr = RendererAttributes {
+            width: 0,
+            height: 0,
+
+            block_width: 0,
+            block_height: 0,
+            block_count_w: 0,
+            block_count_h: 0,
+
+            field_color: Color::default(),
+            border_color: Color::default()
+        };
+
+        attr.block_width = 10;
+        attr.block_height = 10;
+
+        attr.block_count_w = 200;
+        attr.block_count_h = 200;
+
+        attr.renew_total_size();
+
+        assert_eq!(attr.width, 2000);
+        assert_eq!(attr.height, 2000);
     }
 }
