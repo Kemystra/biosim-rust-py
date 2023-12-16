@@ -12,7 +12,7 @@ pub struct Creature {
     genome: Genome,
     position: Vector2D<usize>,
     connections: Vec<Connection>,
-    input_neurons: Vec<Box<InputNeuron>>,
+    input_neurons: Vec<Box<dyn InputNeuron>>,
     internal_neurons: Vec<Box<InternalNeuron>>,
-    action_neurons: Vec<Box<ActionNeuron>>
+    action_neurons: Vec<Box<dyn ActionNeuron>>
 }
