@@ -2,30 +2,34 @@ use crate::creature::Creature;
 
 
 pub struct Simulation {
-    field_width: usize,
-    field_height: usize,
+    field_block_width: usize,
+    field_block_height: usize,
 
     creatures: Vec<Creature>
 }
 
 impl Simulation {
-    pub fn new(field_width: usize, field_height: usize) -> Self {
+    pub fn new(field_block_width: usize, field_block_height: usize) -> Self {
         Self {
-            field_width, field_height,
+            field_block_width, field_block_height,
             creatures: vec![]
         }
     }
 
-    pub fn field_width(&self) -> usize {
-        self.field_width
+    pub fn field_block_width(&self) -> usize {
+        self.field_block_width
     }
 
-    pub fn field_height(&self) -> usize {
-        self.field_height
+    pub fn field_block_height(&self) -> usize {
+        self.field_block_height
     }
 
     pub fn run(&mut self) {
         
+    }
+
+    pub fn creatures(&self) -> &Vec<Creature> {
+        &self.creatures
     }
 }
 
@@ -35,14 +39,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn get_field_width() {
+    fn get_field_block_width() {
         let sim = Simulation::new(100,100);
-        assert_eq!(sim.field_width, 100);
+        assert_eq!(sim.field_block_width, 100);
     }
 
     #[test]
-    fn get_field_height() {
+    fn get_field_block_height() {
         let sim = Simulation::new(100,100);
-        assert_eq!(sim.field_height, 100);
+        assert_eq!(sim.field_block_height, 100);
     }
 }

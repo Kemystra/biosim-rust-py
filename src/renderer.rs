@@ -36,8 +36,8 @@ struct RendererAttributes {
 
     pub block_width: usize,
     pub block_height: usize,
-    pub block_count_w: usize,
-    pub block_count_h: usize,
+    pub field_block_width: usize,
+    pub field_block_height: usize,
 
     pub field_color: Color,
     pub border_color: Color
@@ -45,8 +45,8 @@ struct RendererAttributes {
 
 impl RendererAttributes {
     pub fn renew_total_size(&mut self) {
-        self.width = self.block_width * self.block_count_w;
-        self.height = self.block_height * self.block_count_h;
+        self.width = self.block_width * self.field_block_width;
+        self.height = self.block_height * self.field_block_height;
     }
 }
 
@@ -62,7 +62,7 @@ impl Renderer {
     }
 
     pub fn render(&self, sim: &Simulation) {
-
+        simulation
     }
 
     pub fn plot_pixel<T: Into<usize>>(&self, buffer: Buffer, x: T, y: T, color: Color) {
@@ -128,8 +128,8 @@ impl RendererBuilder {
     }
 
     pub fn with_field_size(mut self, w: usize, h: usize) -> Self {
-        self.attr.block_count_w = w;
-        self.attr.block_count_h = h;
+        self.attr.field_block_width = w;
+        self.attr.field_block_height = h;
 
         self
     }
@@ -172,8 +172,8 @@ mod tests {
 
             block_width: 0,
             block_height: 0,
-            block_count_w: 0,
-            block_count_h: 0,
+            field_block_width: 0,
+            field_block_height: 0,
 
             field_color: Color::default(),
             border_color: Color::default()
@@ -182,8 +182,8 @@ mod tests {
         attr.block_width = 10;
         attr.block_height = 10;
 
-        attr.block_count_w = 200;
-        attr.block_count_h = 200;
+        attr.field_block_width = 200;
+        attr.field_block_height = 200;
 
         attr.renew_total_size();
 
