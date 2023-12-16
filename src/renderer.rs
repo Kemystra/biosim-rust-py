@@ -1,4 +1,6 @@
 use std::default::Default;
+use std::convert::From;
+
 use crate::simulation::Simulation;
 
 
@@ -18,6 +20,12 @@ impl Color {
 
     pub fn rgb_u32(&self) -> u32 {
         self.0
+    }
+}
+
+impl From<u32> for Color {
+    fn from(value: u32) -> Self {
+        Self(value)
     }
 }
 
