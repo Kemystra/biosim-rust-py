@@ -38,11 +38,9 @@ struct RendererAttributes {
     pub width: usize,
     pub height: usize,
 
-    pub block_width: usize,
-    pub block_height: usize,
+    pub block_size: usize,
     pub field_block_width: usize,
     pub field_block_height: usize,
-    pub border_width: usize,
 
     pub field_color: Color,
     pub border_color: Color
@@ -50,8 +48,8 @@ struct RendererAttributes {
 
 impl RendererAttributes {
     pub fn renew_total_size(&mut self) {
-        self.width = (self.block_width * self.field_block_width) + self.border_width;
-        self.height = (self.block_height * self.field_block_height) + self.border_width;
+        self.width = (self.block_size * self.field_block_width) + self.block_size;
+        self.height = (self.block_size * self.field_block_height) + self.block_size;
     }
 }
 
@@ -99,9 +97,9 @@ impl Renderer {
 
         self.stamp_block(
             buffer,
-            attr.block_width,
-            attr.block_height,
-            (attr.width - attr.block_width*2, attr.height - attr.block_height*2)
+            attr.block_size,
+            attr.block_size,
+            (attr.width - attr.block_size*2, attr.height - attr.block_size*2)
         )?;
 
         let mut pos: Vector2D<usize>;
@@ -126,9 +124,9 @@ impl Renderer {
 
         self.stamp_block(
             buffer,
-            field_x * self.attr.block_width,
-            field_y * self.attr.block_height,
-            (self.attr.block_width, self.attr.block_height)
+            field_x * self.attr.block_size,
+            field_y * self.attr.block_size,
+            (self.attr.block_size, self.attr.block_size)
         )?;
 
         Ok(())
@@ -188,8 +186,8 @@ impl RendererBuilder {
     }
 
     pub fn with_block_size(mut self, w: usize, h: usize) -> Self {
-        self.attr.block_width = w;
-        self.attr.block_height = h;
+        self.attr.block_size = w;
+        self.attr.block_size = h;
 
         self
     }
@@ -198,11 +196,6 @@ impl RendererBuilder {
         self.attr.field_block_width = w;
         self.attr.field_block_height = h;
 
-        self
-    }
-
-    pub fn with_border_width(mut self, w: usize) -> Self {
-        self.attr.border_width = w;
         self
     }
 
@@ -242,18 +235,16 @@ mod tests {
             width: 0,
             height: 0,
 
-            block_width: 0,
-            block_height: 0,
+            block_size: 0,
             field_block_width: 0,
             field_block_height: 0,
-            border_width: 0,
 
             field_color: Color::default(),
             border_color: Color::default()
         };
 
-        attr.block_width = 10;
-        attr.block_height = 10;
+        attr.block_size = 10;
+        attr.block_size = 10;
 
         attr.field_block_width = 200;
         attr.field_block_height = 200;
