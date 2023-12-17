@@ -37,7 +37,7 @@ fn main() {
     let mut surface = softbuffer::Surface::new(&context, window.clone()).unwrap();
 
     let sim = Simulation::new(FIELD_WIDTH, FIELD_HEIGHT);
-    let mut renderer = RendererBuilder::new().build();
+    let mut renderer = RendererBuilder::new().build().unwrap();
 
     event_loop.run(move |event, elwt| {
         elwt.set_control_flow(ControlFlow::Poll);
@@ -52,7 +52,7 @@ fn main() {
                     .unwrap();
 
                 let mut buffer = surface.buffer_mut().unwrap();
-                renderer.render(&mut buffer, &sim);
+                renderer.render(&mut buffer, &sim).unwrap();
                 buffer.present().unwrap();
                 println!("{:?}", elwt.control_flow());
             }

@@ -78,20 +78,20 @@ impl Renderer {
         }
     }
 
-    pub fn render(&mut self, buffer: Buffer, sim: &Simulation) {
+    pub fn render(&mut self, buffer: Buffer, sim: &Simulation) -> Result<(), RendererError> {
         let attr = &self.attr;
 
         // Draw border
         self.current_color = attr.border_color;
 
         for x in 0..attr.field_block_width {
-            self.grid_stamp_block(buffer, x, 0);
-            self.grid_stamp_block(buffer, x, attr.field_block_height - 1);
+            self.grid_stamp_block(buffer, x, 0)?;
+            self.grid_stamp_block(buffer, x, attr.field_block_height - 1)?;
         }
 
         for y in 1..(attr.field_block_height - 1) {
-            self.grid_stamp_block(buffer, 0, y);
-            self.grid_stamp_block(buffer, attr.field_block_width - 1, y);
+            self.grid_stamp_block(buffer, 0, y)?;
+            self.grid_stamp_block(buffer, attr.field_block_width - 1, y)?;
         }
 
         // Draw empty field
@@ -102,14 +102,16 @@ impl Renderer {
             attr.block_width,
             attr.block_height,
             (attr.width - attr.block_width*2, attr.height - attr.block_height*2)
-        );
+        )?;
 
         let mut pos: Vector2D<usize>;
-        sim.creatures().iter().for_each(|c| {
-            pos = c.position();
-            self.current_color = c.color();
-            self.grid_stamp_block(buffer, pos.x, pos.y);
-        })
+        for creature in sim.creatures() {
+            pos = creature.position();
+            self.current_color = creature.color();
+            self.grid_stamp_block(buffer, pos.x, pos.y)?;
+        }
+
+        Ok(())
     }
 
     // Stamp blocks of pixels according to the field grid
@@ -127,7 +129,7 @@ impl Renderer {
             field_x * self.attr.block_width,
             field_y * self.attr.block_height,
             (self.attr.block_width, self.attr.block_height)
-        );
+        )?;
 
         Ok(())
     }
@@ -178,11 +180,11 @@ impl RendererBuilder {
 
     pub fn build(mut self) -> Result<Renderer, RendererError> {
         self.attr.renew_total_size();
-        if attr.width == 0 || attr.height == 0 {
-            return Err(RendererError::BufferTooSmall)
+        if self.attr.width == 0 || self.attr.height == 0 {
+            return Err(RendererError::BufferTooSmall);
         }
 
-        Renderer::new(self.attr)
+        return Ok(Renderer::new(self.attr));
     }
 
     pub fn with_block_size(mut self, w: usize, h: usize) -> Self {
