@@ -58,6 +58,8 @@ impl RendererAttributes {
 pub enum RendererError {
     #[error("Trying to access a pixel out of Buffer range ({0}, {1})")]
     OutOfBufferRange(usize, usize),
+    #[error("Trying to stamp on a block outside of field ({0}, {1})")]
+    OutOfFieldRange(usize, usize)
 }
 
 pub struct Renderer {
@@ -75,9 +77,18 @@ impl Renderer {
     }
 
     // Stamp blocks of pixels according to the field grid
-    pub fn grid_stamp_block<T>(&self, buffer: Buffer, field_x: T, field_y: T)
+    pub fn grid_stamp_block<T>(&self, buffer: Buffer, field_x: T, field_y: T) -> Result<(), RendererError>
         where T: Into<usize> {
+        let field_x = field_x.into();
+        let field_y = field_y.into();
 
+        if field_x >= self.attr.field_block_width || field_y >= self.attr.field_block_height {
+            return Err(RendererError::OutOfFieldRange(field_x, field_y));
+        }
+
+        self.stamp_block(buffer, field_x * self.attr.block_width, field_y * self.attr.block_height);
+
+        Ok(())
     }
 
     // Raw block stamping, without caring where it will go
@@ -87,11 +98,7 @@ impl Renderer {
 
         for x_offset in 0..self.attr.block_width {
             for y_offset in 0..self.attr.block_height {
-                self.plot_pixel(buffer,
-                    x.into() + x_offset,
-                    y.into() + y_offset,
-                    self.attr.field_color
-                )?;
+                self.plot_pixel(buffer, x.into() + x_offset, y.into() + y_offset, self.attr.field_color)?;
             }
         }
 
