@@ -1,5 +1,8 @@
-use std::default::Default;
+use std::{default::Default, error::Error};
 use std::convert::From;
+use std::cmp::PartialEq;
+
+use thiserror::Error;
 
 use crate::simulation::Simulation;
 
@@ -51,6 +54,12 @@ impl RendererAttributes {
     }
 }
 
+#[derive(Debug, Error)]
+pub enum RendererError {
+    #[error()]
+    OutOfBufferRange()
+}
+
 pub struct Renderer {
     attr: RendererAttributes
 }
@@ -62,21 +71,32 @@ impl Renderer {
         }
     }
 
-    pub fn render(&self, sim: &Simulation) {
+    pub fn render(&self, buffer: Buffer, sim: &Simulation) {
+        let 
+        for i in 0..4 {
 
+        }
     }
 
     pub fn plot_pixel<T: Into<usize>>(&self, buffer: Buffer, x: T, y: T, color: Color) {
         buffer[x.into() + (y.into()*self.attr.width)] = color.rgb_u32();
     }
 
-    pub fn bresenham_line(
-        &mut self, buffer: Buffer, color: Color,
-        x0: isize, y0: isize,
-        end_x: isize, end_y: isize) {
+    pub fn stamp_block(&self, buffer: Buffer, x) {
+        
+    }
 
-        let mut curr_x = x0;
-        let mut curr_y = y0;
+    pub fn bresenham_line<T>(
+        &mut self, buffer: Buffer, color: Color,
+        x0: T, y0: T,
+        end_x: T, end_y: T) -> Result<(), <isize as TryFrom<T>>::Error> 
+    where T: Into<isize> {
+
+        let mut curr_x = x0.into();
+        let mut curr_y = y0.into();
+
+        let end_x = end_x.into();
+        let end_y = end_y.into();
 
         let dx = (end_x - curr_x).abs();
         let dy = -(end_y - curr_y).abs();
@@ -86,7 +106,7 @@ impl Renderer {
         let sy = if curr_y < end_y {1} else {-1};
 
         loop {
-            self.plot_pixel(buffer, curr_x as usize, curr_y as usize, color);
+            self.plot_pixel::<usize>(buffer, curr_x.try_into().unwrap(), curr_y.try_into().unwrap(), color);
             if curr_x == end_x && curr_y == end_y {break}
             let e2 = error * 2;
 
@@ -102,6 +122,8 @@ impl Renderer {
                 curr_y += sy
             }
         }
+
+        Ok(())
     }
 }
 
