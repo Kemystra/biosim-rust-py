@@ -38,6 +38,7 @@ struct RendererAttributes {
     pub block_height: usize,
     pub field_block_width: usize,
     pub field_block_height: usize,
+    pub border_width: usize,
 
     pub field_color: Color,
     pub border_color: Color
@@ -45,8 +46,8 @@ struct RendererAttributes {
 
 impl RendererAttributes {
     pub fn renew_total_size(&mut self) {
-        self.width = self.block_width * self.field_block_width;
-        self.height = self.block_height * self.field_block_height;
+        self.width = (self.block_width * self.field_block_width) + self.border_width;
+        self.height = (self.block_height * self.field_block_height) + self.border_width;
     }
 }
 
@@ -62,7 +63,7 @@ impl Renderer {
     }
 
     pub fn render(&self, sim: &Simulation) {
-        simulation
+
     }
 
     pub fn plot_pixel<T: Into<usize>>(&self, buffer: Buffer, x: T, y: T, color: Color) {
@@ -134,6 +135,11 @@ impl RendererBuilder {
         self
     }
 
+    pub fn with_border_width(mut self, w: usize) -> Self {
+        self.attr.border_width = w;
+        self
+    }
+
     pub fn with_field_color(mut self, color: Color) -> Self {
         self.attr.field_color = color;
         self
@@ -174,6 +180,7 @@ mod tests {
             block_height: 0,
             field_block_width: 0,
             field_block_height: 0,
+            border_width: 0,
 
             field_color: Color::default(),
             border_color: Color::default()
