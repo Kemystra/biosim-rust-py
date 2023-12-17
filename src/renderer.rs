@@ -134,11 +134,13 @@ impl Renderer {
     // Starting from top left corner
     fn stamp_block<T>(&self, buffer: Buffer, x: T, y: T, size: (T,T)) -> Result<(), RendererError>
         where T: Into<usize> {
-        let (stamp_width, stamp_height) = size;
+        // Is this code ugly? Yes
+        let (stamp_width, stamp_height) = (size.0.into(), size.1.into());
+        let (x, y) = (x.into(), y.into());
 
         for x_offset in 0..stamp_width.into() {
             for y_offset in 0..stamp_height.into() {
-                self.plot_pixel(buffer, x.into() + x_offset, y.into() + y_offset, self.current_color)?;
+                self.plot_pixel(buffer, x + x_offset, y + y_offset, self.current_color)?;
             }
         }
 
