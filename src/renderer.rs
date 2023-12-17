@@ -72,10 +72,30 @@ impl Renderer {
     }
 
     pub fn render(&self, buffer: Buffer, sim: &Simulation) {
-        let 
-        for i in 0..4 {
+    }
 
+    // Stamp blocks of pixels according to the field grid
+    pub fn grid_stamp_block<T>(&self, buffer: Buffer, field_x: T, field_y: T)
+        where T: Into<usize> {
+
+    }
+
+    // Raw block stamping, without caring where it will go
+    // Starting from top left corner
+    fn stamp_block<T>(&self, buffer: Buffer, x: T, y: T) -> Result<(), RendererError>
+        where T: Into<usize> {
+
+        for x_offset in 0..self.attr.block_width {
+            for y_offset in 0..self.attr.block_height {
+                self.plot_pixel(buffer,
+                    x.into() + x_offset,
+                    y.into() + y_offset,
+                    self.attr.field_color
+                )?;
+            }
         }
+
+        Ok(())
     }
 
     pub fn plot_pixel<T>(&self, buffer: Buffer, x: T, y: T, color: Color) -> Result<(), RendererError>
