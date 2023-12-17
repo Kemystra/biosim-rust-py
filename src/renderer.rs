@@ -92,50 +92,6 @@ impl Renderer {
 
         Ok(())
     }
-
-    pub fn stamp_block(&self, buffer: Buffer, x) {
-        
-    }
-
-    pub fn bresenham_line<T>(
-        &mut self, buffer: Buffer, color: Color,
-        x0: T, y0: T,
-        end_x: T, end_y: T) -> Result<(), <isize as TryFrom<T>>::Error> 
-    where T: Into<isize> {
-
-        let mut curr_x = x0.into();
-        let mut curr_y = y0.into();
-
-        let end_x = end_x.into();
-        let end_y = end_y.into();
-
-        let dx = (end_x - curr_x).abs();
-        let dy = -(end_y - curr_y).abs();
-        let mut error = dx + dy;
-
-        let sx = if curr_x < end_x {1} else {-1};
-        let sy = if curr_y < end_y {1} else {-1};
-
-        loop {
-            self.plot_pixel::<usize>(buffer, curr_x.try_into().unwrap(), curr_y.try_into().unwrap(), color);
-            if curr_x == end_x && curr_y == end_y {break}
-            let e2 = error * 2;
-
-            if e2 >= dy {
-                if curr_x == end_x {break}
-                error += dy;
-                curr_x += sx;
-            }
-
-            if e2 <= dx {
-                if curr_y == end_y {break}
-                error += dx;
-                curr_y += sy
-            }
-        }
-
-        Ok(())
-    }
 }
 
 pub struct RendererBuilder {
