@@ -33,7 +33,7 @@ impl From<u32> for Color {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 struct RendererAttributes {
     pub width: usize,
     pub height: usize,
@@ -82,15 +82,11 @@ impl Renderer {
         // Draw border
         self.current_color = attr.border_color;
 
-        for x in 0..attr.field_block_width {
-            self.grid_stamp_block(buffer, x, 0)?;
-            self.grid_stamp_block(buffer, x, attr.field_block_height - 1)?;
-        }
+        self.stamp_block(buffer, 0, 0, (attr.width, attr.block_size))?;
+        self.stamp_block(buffer, 0, attr.height - attr.block_size, (attr.width, attr.block_size))?;
 
-        for y in 1..(attr.field_block_height - 1) {
-            self.grid_stamp_block(buffer, 0, y)?;
-            self.grid_stamp_block(buffer, attr.field_block_width - 1, y)?;
-        }
+        self.stamp_block(buffer, 0, attr.block_size, (attr.block_size, attr.height - attr.block_size*2))?;
+        self.stamp_block(buffer, attr.width - attr.block_size, attr.block_size, (attr.block_size, attr.height - attr.block_size*2))?;
 
         // Draw empty field
         self.current_color = attr.field_color;
@@ -153,6 +149,7 @@ impl Renderer {
         where T: Into<usize> {
 
         let (x, y) = (x.into(), y. into());
+
         let parsed_index = x + (y*self.attr.width);
 
         let slice_index = buffer
@@ -185,9 +182,8 @@ impl RendererBuilder {
         return Ok(Renderer::new(self.attr));
     }
 
-    pub fn with_block_size(mut self, w: usize, h: usize) -> Self {
-        self.attr.block_size = w;
-        self.attr.block_size = h;
+    pub fn with_block_size(mut self, s: usize) -> Self {
+        self.attr.block_size = s;
 
         self
     }
