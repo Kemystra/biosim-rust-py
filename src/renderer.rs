@@ -77,7 +77,7 @@ impl Renderer {
     }
 
     pub fn render(&mut self, buffer: Buffer, sim: &Simulation) {
-        let attr = self.attr;
+        let attr = &self.attr;
 
         // Draw border
         self.current_color = attr.border_color;
