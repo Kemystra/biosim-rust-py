@@ -56,8 +56,8 @@ impl RendererAttributes {
 
 #[derive(Debug, Error)]
 pub enum RendererError {
-    #[error()]
-    OutOfBufferRange()
+    #[error("Trying to access a pixel out of Buffer range ({0}, {1})")]
+    OutOfBufferRange(usize, usize),
 }
 
 pub struct Renderer {
@@ -78,8 +78,19 @@ impl Renderer {
         }
     }
 
-    pub fn plot_pixel<T: Into<usize>>(&self, buffer: Buffer, x: T, y: T, color: Color) {
-        buffer[x.into() + (y.into()*self.attr.width)] = color.rgb_u32();
+    pub fn plot_pixel<T>(&self, buffer: Buffer, x: T, y: T, color: Color) -> Result<(), RendererError>
+        where T: Into<usize> {
+
+        let (x, y) = (x.into(), y. into());
+        let parsed_index = x + (y*self.attr.width);
+
+        let slice_index = buffer
+            .get_mut(parsed_index)
+            .ok_or(RendererError::OutOfBufferRange(x, y))?;
+
+        *slice_index = color.rgb_u32();
+
+        Ok(())
     }
 
     pub fn stamp_block(&self, buffer: Buffer, x) {
