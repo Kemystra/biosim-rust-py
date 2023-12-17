@@ -98,18 +98,24 @@ impl Renderer {
             return Err(RendererError::OutOfFieldRange(field_x, field_y));
         }
 
-        self.stamp_block(buffer, field_x * self.attr.block_width, field_y * self.attr.block_height);
+        self.stamp_block(
+            buffer,
+            field_x * self.attr.block_width,
+            field_y * self.attr.block_height,
+            (self.attr.block_width, self.attr.block_height)
+        );
 
         Ok(())
     }
 
     // Raw block stamping, without caring where it will go
     // Starting from top left corner
-    fn stamp_block<T>(&self, buffer: Buffer, x: T, y: T) -> Result<(), RendererError>
+    fn stamp_block<T>(&self, buffer: Buffer, x: T, y: T, size: (T,T)) -> Result<(), RendererError>
         where T: Into<usize> {
+        let (stamp_width, stamp_height) = size;
 
-        for x_offset in 0..self.attr.block_width {
-            for y_offset in 0..self.attr.block_height {
+        for x_offset in 0..stamp_width.into() {
+            for y_offset in 0..stamp_height.into() {
                 self.plot_pixel(buffer, x.into() + x_offset, y.into() + y_offset, self.attr.field_color)?;
             }
         }
