@@ -74,6 +74,18 @@ impl Renderer {
     }
 
     pub fn render(&self, buffer: Buffer, sim: &Simulation) {
+        // Draw border
+        for x in 0..self.attr.field_block_width {
+            self.grid_stamp_block(buffer, x, 0);
+            self.grid_stamp_block(buffer, x, self.attr.field_block_height - 1);
+        }
+
+        for y in 1..(self.attr.field_block_height - 1) {
+            self.grid_stamp_block(buffer, 0, y);
+            self.grid_stamp_block(buffer, self.attr.field_block_width - 1, y);
+        }
+
+        // Draw empty field
     }
 
     // Stamp blocks of pixels according to the field grid
