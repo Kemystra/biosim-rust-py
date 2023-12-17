@@ -60,7 +60,9 @@ pub enum RendererError {
     #[error("Trying to access a pixel out of Buffer range ({0}, {1})")]
     OutOfBufferRange(usize, usize),
     #[error("Trying to stamp on a block outside of field ({0}, {1})")]
-    OutOfFieldRange(usize, usize)
+    OutOfFieldRange(usize, usize),
+    #[error("Total width/height of Buffer should be bigger than 0_usize")]
+    BufferTooSmall
 }
 
 pub struct Renderer {
@@ -174,8 +176,12 @@ impl RendererBuilder {
         }
     }
 
-    pub fn build(mut self) -> Renderer {
+    pub fn build(mut self) -> Result<Renderer, RendererError> {
         self.attr.renew_total_size();
+        if attr.width == 0 || attr.height == 0 {
+            return Err(RendererError::BufferTooSmall)
+        }
+
         Renderer::new(self.attr)
     }
 
