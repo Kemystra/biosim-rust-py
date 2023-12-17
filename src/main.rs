@@ -13,7 +13,7 @@ mod renderer;
 mod vector2d;
 
 use simulation::Simulation;
-use renderer::{Renderer, RendererBuilder};
+use renderer::RendererBuilder;
 
 const FIELD_WIDTH: usize = 100;
 const FIELD_HEIGHT: usize = 100;
@@ -36,7 +36,8 @@ fn main() {
     let context = softbuffer::Context::new(window.clone()).unwrap();
     let mut surface = softbuffer::Surface::new(&context, window.clone()).unwrap();
 
-    let renderer = RendererBuilder::new().build();
+    let sim = Simulation::new(FIELD_WIDTH, FIELD_HEIGHT);
+    let mut renderer = RendererBuilder::new().build();
 
     event_loop.run(move |event, elwt| {
         elwt.set_control_flow(ControlFlow::Poll);
@@ -51,6 +52,7 @@ fn main() {
                     .unwrap();
 
                 let mut buffer = surface.buffer_mut().unwrap();
+                renderer.render(&mut buffer, &sim);
                 buffer.present().unwrap();
                 println!("{:?}", elwt.control_flow());
             }
