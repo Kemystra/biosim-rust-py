@@ -5,6 +5,7 @@ use std::cmp::PartialEq;
 use thiserror::Error;
 
 use crate::simulation::Simulation;
+use crate::vector2d::Vector2D;
 
 
 type Buffer<'a> = &'a mut [u32];
@@ -63,29 +64,50 @@ pub enum RendererError {
 }
 
 pub struct Renderer {
-    attr: RendererAttributes
+    attr: RendererAttributes,
+    current_color: Color
 }
 
 impl Renderer {
     fn new(attr: RendererAttributes) -> Self {
         Self {
-            attr
+            attr,
+            current_color: Color::default()
         }
     }
 
-    pub fn render(&self, buffer: Buffer, sim: &Simulation) {
+    pub fn render(&mut self, buffer: Buffer, sim: &Simulation) {
+        let attr = self.attr;
+
         // Draw border
-        for x in 0..self.attr.field_block_width {
+        self.current_color = attr.border_color;
+
+        for x in 0..attr.field_block_width {
             self.grid_stamp_block(buffer, x, 0);
-            self.grid_stamp_block(buffer, x, self.attr.field_block_height - 1);
+            self.grid_stamp_block(buffer, x, attr.field_block_height - 1);
         }
 
-        for y in 1..(self.attr.field_block_height - 1) {
+        for y in 1..(attr.field_block_height - 1) {
             self.grid_stamp_block(buffer, 0, y);
-            self.grid_stamp_block(buffer, self.attr.field_block_width - 1, y);
+            self.grid_stamp_block(buffer, attr.field_block_width - 1, y);
         }
 
         // Draw empty field
+        self.current_color = attr.field_color;
+
+        self.stamp_block(
+            buffer,
+            attr.block_width,
+            attr.block_height,
+            (attr.width - attr.block_width*2, attr.height - attr.block_height*2)
+        );
+
+        let mut pos: Vector2D<usize>;
+        sim.creatures().iter().for_each(|c| {
+            pos = c.position();
+            self.current_color = c.color();
+            self.grid_stamp_block(buffer, pos.x, pos.y);
+        })
     }
 
     // Stamp blocks of pixels according to the field grid
@@ -116,7 +138,7 @@ impl Renderer {
 
         for x_offset in 0..stamp_width.into() {
             for y_offset in 0..stamp_height.into() {
-                self.plot_pixel(buffer, x.into() + x_offset, y.into() + y_offset, self.attr.field_color)?;
+                self.plot_pixel(buffer, x.into() + x_offset, y.into() + y_offset, self.current_color)?;
             }
         }
 
