@@ -1,9 +1,12 @@
 use std::num::NonZeroU32;
 use std::rc::Rc;
-use winit::event::{Event, WindowEvent};
+use std::time::Instant;
+
+use winit::event::{Event, WindowEvent, KeyEvent};
 use winit::event_loop::{ControlFlow, EventLoop};
 use winit::window::WindowBuilder;
 use winit::dpi::PhysicalSize;
+use winit::keyboard::{Key, NamedKey};
 
 mod simulation;
 mod creature;
@@ -47,6 +50,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .with_border_color(gray)
         .build().unwrap();
 
+    let mut now = Instant::now();
+    let mut delta_time = 0;
     event_loop.run(move |event, elwt| {
         elwt.set_control_flow(ControlFlow::Poll);
 
@@ -62,7 +67,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let mut buffer = surface.buffer_mut().unwrap();
                 renderer.render(&mut buffer, &sim).unwrap();
                 buffer.present().unwrap();
+
+                delta_time = now.elapsed().as_micros();
+                now = Instant::now();
             }
+
+            Event::WindowEvent { event: WindowEvent::KeyboardInput { event, ..}, window_id }
+                if window_id == window.id() => {
+                    let pressed_key;
+                    if let Some(key) = get_key_press(event) {
+                        pressed_key = key;
+                    }
+                    else { return }
+
+                    match pressed_key {
+                        NamedKey::Space => {
+                            println!("FPS: {:?}", 1_000_000 / delta_time)
+                        },
+                        _ => ()
+                    }
+                }
 
             Event::WindowEvent {
                 event: WindowEvent::CloseRequested,
@@ -75,4 +99,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     })?;
 
     Ok(())
+}
+
+fn get_key_press(key_event: KeyEvent) -> Option<NamedKey> {
+    if !key_event.state.is_pressed() { return None }
+
+    if let Key::Named(named_key) = key_event.logical_key {
+        Some(named_key)
+    }
+    else { None }
 }
