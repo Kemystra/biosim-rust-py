@@ -1,4 +1,4 @@
-use std::{default::Default, error::Error};
+use std::default::Default;
 use std::convert::From;
 use std::cmp::PartialEq;
 
@@ -65,18 +65,20 @@ pub enum RendererError {
 
 pub struct Renderer {
     attr: RendererAttributes,
-    current_color: Color
+    current_color: Color,
+    is_initialized: bool
 }
 
 impl Renderer {
     fn new(attr: RendererAttributes) -> Self {
         Self {
             attr,
-            current_color: Color::default()
+            current_color: Color::default(),
+            is_initialized: false
         }
     }
 
-    pub fn render(&mut self, buffer: Buffer, sim: &Simulation) -> Result<(), RendererError> {
+    fn init_render(&mut self, buffer: Buffer) -> Result<(), RendererError> {
         let attr = &self.attr;
 
         // Draw border
@@ -97,6 +99,15 @@ impl Renderer {
             attr.block_size,
             (attr.width - attr.block_size*2, attr.height - attr.block_size*2)
         )?;
+
+        self.is_initialized = true;
+        Ok(())
+    }
+
+    pub fn render(&mut self, buffer: Buffer, sim: &Simulation) -> Result<(), RendererError> {
+        if !self.is_initialized {
+            self.init_render(buffer)?;
+        }
 
         let mut pos: Vector2D<usize>;
         for creature in sim.creatures() {
