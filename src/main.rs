@@ -38,6 +38,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let context = softbuffer::Context::new(window.clone()).unwrap();
     let mut surface = softbuffer::Surface::new(&context, window.clone()).unwrap();
+    surface.resize(
+        NonZeroU32::new(viewport_width).unwrap(),
+        NonZeroU32::new(viewport_height).unwrap(),
+    )
+    .unwrap();
 
     let sim = Simulation::new(FIELD_WIDTH, FIELD_HEIGHT);
 
@@ -52,18 +57,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut now = Instant::now();
     let mut delta_time = 0;
+    event_loop.set_control_flow(ControlFlow::Poll);
     event_loop.run(move |event, elwt| {
-        elwt.set_control_flow(ControlFlow::Poll);
-
         match event {
             Event::WindowEvent { window_id, event: WindowEvent::RedrawRequested } if window_id == window.id() => {
-                surface
-                    .resize(
-                        NonZeroU32::new(viewport_width).unwrap(),
-                        NonZeroU32::new(viewport_height).unwrap(),
-                    )
-                    .unwrap();
-
                 let mut buffer = surface.buffer_mut().unwrap();
                 renderer.render(&mut buffer, &sim).unwrap();
                 buffer.present().unwrap();
