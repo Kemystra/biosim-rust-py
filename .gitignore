@@ -1,1 +1,9 @@
 /target
+
+# Ignore recorded and processed perf's data
+perf.data.old
+perf.data
+result.perf
+
+# Ignore flamegraph photo
+flamegraph.svg
