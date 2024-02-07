@@ -1,5 +1,4 @@
 use std::default::Default;
-use std::convert::From;
 use std::cmp::PartialEq;
 
 use thiserror::Error;
@@ -11,25 +10,15 @@ use crate::vector2d::Vector2D;
 type Buffer<'a> = &'a mut [u32];
 
 #[derive(Debug, PartialEq, Default, Clone, Copy)]
-pub struct Color(u32);
+pub struct Color(u8, u8, u8);
 
 impl Color {
     pub fn new<T: TryInto<u8>>(r: T, g: T, b: T) -> Self {
         Self (
-            r.try_into().unwrap_or_default() as u32 |
-            ((g.try_into().unwrap_or_default() as u32) << 8) |
-            ((b.try_into().unwrap_or_default() as u32) << 16)
+            r.try_into().unwrap_or_default(),
+            g.try_into().unwrap_or_default(),
+            b.try_into().unwrap_or_default()
         )
-    }
-
-    pub fn rgb_u32(&self) -> u32 {
-        self.0
-    }
-}
-
-impl From<u32> for Color {
-    fn from(value: u32) -> Self {
-        Self(value)
     }
 }
 
@@ -107,13 +96,5 @@ mod tests {
         let color = Color::new(256, 34, -1);
 
         assert_eq!(color, Color::new(0, 34, 0));
-    }
-
-    #[test]
-    fn output_rgb_as_u32() {
-        let color = Color::new(100, 234, 88);
-        let expected = 100_u32 | (234 << 8) | (88 << 16);
-
-        assert_eq!(color.rgb_u32(), expected);
     }
 }
