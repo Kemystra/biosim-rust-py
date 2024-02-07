@@ -1,6 +1,6 @@
 use std::num::NonZeroU32;
 use std::rc::Rc;
-use std::time::Instant;
+use std::time::{Instant, Duration};
 
 use winit::event::{Event, WindowEvent, KeyEvent};
 use winit::event_loop::{ControlFlow, EventLoop};
@@ -22,6 +22,8 @@ const FIELD_WIDTH: usize = 100;
 const FIELD_HEIGHT: usize = 100;
 
 const BLOCK_SIZE: usize = 5;
+
+const MICROSECONDS_PER_FRAME: u64 = 1_000_000 / 60;
 
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -56,16 +58,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .build().unwrap();
 
     let mut now = Instant::now();
-    let mut delta_time = 0;
+    let mut delta_time = Duration::new(0,0);
+    let per_frame_duration = Duration::from_micros(MICROSECONDS_PER_FRAME);
+
     event_loop.set_control_flow(ControlFlow::Poll);
     event_loop.run(move |event, elwt| {
         match event {
             Event::WindowEvent { window_id, event: WindowEvent::RedrawRequested } if window_id == window.id() => {
+            }
+
+            Event::AboutToWait => {
                 let mut buffer = surface.buffer_mut().unwrap();
                 renderer.render(&mut buffer, &sim).unwrap();
                 buffer.present().unwrap();
 
-                delta_time = now.elapsed().as_micros();
+                delta_time = now.elapsed();
+                println!("{:?}", delta_time.as_micros());
                 now = Instant::now();
             }
 
@@ -79,7 +87,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                     match pressed_key {
                         NamedKey::Space => {
-                            println!("FPS: {:?}", 1_000_000 / delta_time)
+                            println!("FPS: {:?}", 1_000_000 / delta_time.as_micros());
                         },
                         _ => ()
                     }
