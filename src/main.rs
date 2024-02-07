@@ -11,13 +11,12 @@ use renderer::{RendererBuilder, Color};
 const FIELD_WIDTH: usize = 100;
 const FIELD_HEIGHT: usize = 100;
 
-const BLOCK_SIZE: usize = 5;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let sim = Simulation::new(FIELD_WIDTH, FIELD_HEIGHT);
 
-    let gray = Color::from(0x00_aa_aa_aa);
-    let light_orange = Color::from(0x00_ff_ee_bf);
+    let gray = Color::new(0xaa, 0xaa, 0xaa);
+    let light_orange = Color::new(0xff, 0xdd, 0x8c);
     let mut renderer = RendererBuilder::new()
         .with_field_color(light_orange)
         .with_border_color(gray)
