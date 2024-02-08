@@ -20,8 +20,12 @@ impl Color {
         )
     }
 
-    pub fn byte_array(&self) -> [u8; 3] {
+    pub fn byte_array_big_endian(&self) -> [u8; 3] {
         [self.0, self.1, self.2]
+    }
+
+    pub fn byte_array_little_endian(&self) -> [u8; 3] {
+        [self.2, self.1, self.0]
     }
 
     pub fn from_xrgb_u32(num: u32) -> Self {
