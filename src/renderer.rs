@@ -49,7 +49,9 @@ pub enum RendererError {
     #[error("Trying to stamp on a block outside of field ({0}, {1})")]
     OutOfFieldRange(usize, usize),
     #[error("Total width/height of Buffer should be bigger than 0_usize")]
-    BufferTooSmall
+    BufferTooSmall,
+    #[error("Trying to initialize Renderer more than once")]
+    RendererAlreadyInitialized
 }
 
 pub struct Renderer {
@@ -75,7 +77,11 @@ impl Renderer {
         }
     }
 
-    pub fn init(&mut self) {
+    pub fn init(&mut self) -> Result<(), RendererError> {
+        if self.is_initialized {
+            return Err(RendererError::RendererAlreadyInitialized);
+        }
+
         let mut initial_field = Vec::with_capacity(
             self.buffer_width * self.buffer_height
         );
@@ -101,6 +107,9 @@ impl Renderer {
         }
 
         self.empty_field_buffer = initial_field;
+        self.is_initialized = true;
+
+        Ok(())
     }
 
     pub fn render(&self, sim: &Simulation) -> Buffer {

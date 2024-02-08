@@ -28,7 +28,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .with_field_dimensions(FIELD_WIDTH, FIELD_HEIGHT)
         .build()?;
 
-    renderer.init();
+    renderer.init()?;
     let raw_image_buffer = renderer.render(&sim);
     let (buffer_width, buffer_height) = renderer.buffer_dimensions();
 
