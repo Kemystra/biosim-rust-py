@@ -92,6 +92,16 @@ impl Renderer<'_> {
         self.empty_field_buffer = &initial_field;
     }
 
+    pub fn render(&self, sim: &Simulation) -> Buffer {
+        let mut buffer = Vec::with_capacity(self.buffer_height * self.buffer_width);
+        for c in sim.creatures() {
+            let pos = c.position();
+            self.plot_pixel(&mut buffer, pos.x, pos.y, c.color());
+        }
+
+        buffer
+    }
+
     fn plot_pixel(&self, buffer: &mut Buffer, x: usize, y: usize, color: Color) {
         buffer[x + (y*self.buffer_width)] = color;
     }
