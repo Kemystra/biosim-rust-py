@@ -19,6 +19,10 @@ impl Color {
             b.try_into().unwrap_or_default()
         )
     }
+
+    pub fn byte_array(&self) -> &[u8; 3] {
+        &[self.0, self.1, self.2]
+    }
 }
 
 #[derive(Default, Debug)]

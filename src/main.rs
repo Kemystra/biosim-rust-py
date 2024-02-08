@@ -28,6 +28,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         .with_field_dimensions(FIELD_WIDTH, FIELD_HEIGHT)
         .build()?;
 
+    renderer.init();
+    let raw_image_buffer = renderer.render(&sim);
+    let (buffer_width, buffer_height) = renderer.buffer_dimensions();
+
+    export_to_tga(raw_image_buffer, buffer_width, buffer_height)?;
+
     Ok(())
 }
 
@@ -53,7 +59,11 @@ fn export_to_tga(buffer: Buffer, buffer_width: usize, buffer_height: usize) -> R
     header_data[17] = 0b00_10_00_00;
 
     file_writer.write(&header_data);
-    file_writer.write(buffer);
+
+    for color in buffer {
+        file_writer.write(color.byte_array());
+    }
+
     file_writer.flush();
 
     Ok(())
