@@ -102,6 +102,10 @@ impl Renderer<'_> {
         buffer
     }
 
+    pub fn buffer_dimensions(&self) -> (usize, usize) {
+        (self.buffer_width, self.buffer_height)
+    }
+
     fn plot_pixel(&self, buffer: &mut Buffer, x: usize, y: usize, color: Color) {
         buffer[x + (y*self.buffer_width)] = color;
     }
