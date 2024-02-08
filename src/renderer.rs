@@ -52,16 +52,16 @@ pub enum RendererError {
     BufferTooSmall
 }
 
-pub struct Renderer<'a> {
+pub struct Renderer {
     attr: RendererAttributes,
     buffer_height: usize,
     buffer_width: usize,
 
     is_initialized: bool,
-    empty_field_buffer: &'a[Color]
+    empty_field_buffer: Buffer
 }
 
-impl Renderer<'_> {
+impl Renderer {
     fn new(attr: RendererAttributes) -> Self {
         let buffer_width = attr.field_width + 2;
         let buffer_height = attr.field_height + 2;
@@ -71,7 +71,7 @@ impl Renderer<'_> {
             buffer_width,
             buffer_height,
             is_initialized: false,
-            empty_field_buffer: &vec![]
+            empty_field_buffer: vec![]
         }
     }
 
@@ -100,7 +100,7 @@ impl Renderer<'_> {
             }
         }
 
-        self.empty_field_buffer = &initial_field;
+        self.empty_field_buffer = initial_field;
     }
 
     pub fn render(&self, sim: &Simulation) -> Buffer {
@@ -133,7 +133,7 @@ impl RendererBuilder {
         }
     }
 
-    pub fn build(mut self) -> Result<Renderer<'static>, RendererError> {
+    pub fn build(self) -> Result<Renderer, RendererError> {
         if self.attr.field_width == 0 || self.attr.field_height == 0 {
             return Err(RendererError::BufferTooSmall);
         }
