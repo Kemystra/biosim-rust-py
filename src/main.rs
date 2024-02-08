@@ -61,7 +61,7 @@ fn export_to_tga(buffer: Buffer, buffer_width: usize, buffer_height: usize) -> R
     file_writer.write(&header_data);
 
     for color in buffer {
-        file_writer.write(color.byte_array());
+        file_writer.write(&color.byte_array());
     }
 
     file_writer.flush();

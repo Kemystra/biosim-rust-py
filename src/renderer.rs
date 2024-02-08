@@ -20,8 +20,8 @@ impl Color {
         )
     }
 
-    pub fn byte_array(&self) -> &[u8; 3] {
-        &[self.0, self.1, self.2]
+    pub fn byte_array(&self) -> [u8; 3] {
+        [self.0, self.1, self.2]
     }
 
     pub fn from_xrgb_u32(num: u32) -> Self {
