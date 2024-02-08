@@ -23,6 +23,14 @@ impl Color {
     pub fn byte_array(&self) -> &[u8; 3] {
         &[self.0, self.1, self.2]
     }
+
+    pub fn from_xrgb_u32(num: u32) -> Self {
+        Self (
+            (0xFF & (num >> 16)) as u8,
+            (0xFF & (num >> 8)) as u8,
+            (0xFF & num) as u8
+        )
+    }
 }
 
 #[derive(Default, Debug)]

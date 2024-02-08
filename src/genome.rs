@@ -34,7 +34,7 @@ impl Genome {
             .ok_or("Genome is empty".to_string())?
             .into();
 
-        Ok(Color::from(val * 256))
+        Ok(Color::from_xrgb_u32(val * 256))
     }
 /*
     pub fn generate_brain(&self) -> Brain {
@@ -61,7 +61,7 @@ mod tests {
         let genome = Genome::new(&bytes);
 
         let color = genome.generate_color().unwrap();
-        assert_eq!(color, Color::from(2253824));
+        assert_eq!(color, Color::from_xrgb_u32(2253824));
     }
 
     #[test]
