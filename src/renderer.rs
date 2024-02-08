@@ -7,7 +7,7 @@ use crate::simulation::Simulation;
 use crate::vector2d::Vector2D;
 
 
-type Buffer<'a> = &'a mut [u32];
+type Buffer = Vec<Color>;
 
 #[derive(Debug, PartialEq, Default, Clone, Copy)]
 pub struct Color(u8, u8, u8);
@@ -24,8 +24,8 @@ impl Color {
 
 #[derive(Default, Debug)]
 struct RendererAttributes {
-    pub width: usize,
-    pub height: usize,
+    pub field_width: usize,
+    pub field_height: usize,
 
     pub field_color: Color,
     pub border_color: Color
@@ -41,19 +41,59 @@ pub enum RendererError {
     BufferTooSmall
 }
 
-pub struct Renderer {
+pub struct Renderer<'a> {
     attr: RendererAttributes,
-    current_color: Color,
-    is_initialized: bool
+    buffer_height: usize,
+    buffer_width: usize,
+
+    is_initialized: bool,
+    empty_field_buffer: &'a[Color]
 }
 
-impl Renderer {
+impl Renderer<'_> {
     fn new(attr: RendererAttributes) -> Self {
+        let buffer_width = attr.field_width + 2;
+        let buffer_height = attr.field_height + 2;
+
         Self {
             attr,
-            current_color: Color::default(),
-            is_initialized: false
+            buffer_width,
+            buffer_height,
+            is_initialized: false,
+            empty_field_buffer: &vec![]
         }
+    }
+
+    pub fn init(&mut self) {
+        let mut initial_field = Vec::with_capacity(
+            self.buffer_width * self.buffer_height
+        );
+
+        // Draw border
+        // Top & bottom
+        for i in 0..self.buffer_width {
+            self.plot_pixel(&mut initial_field, i, 0, self.attr.border_color);
+            self.plot_pixel(&mut initial_field, i, self.buffer_height - 1, self.attr.border_color);
+        }
+
+        // Right & left
+        for i in 0..self.buffer_width {
+            self.plot_pixel(&mut initial_field, 0, i, self.attr.border_color);
+            self.plot_pixel(&mut initial_field, self.buffer_width - 1, i, self.attr.border_color);
+        }
+
+        // Draw empty field
+        for x in 0..self.buffer_width {
+            for y in 0..self.buffer_height {
+                self.plot_pixel(&mut initial_field, x, y, self.attr.field_color);
+            }
+        }
+
+        self.empty_field_buffer = &initial_field;
+    }
+
+    fn plot_pixel(&self, buffer: &mut Buffer, x: usize, y: usize, color: Color) {
+        buffer[x + (y*self.buffer_width)] = color;
     }
 }
 
@@ -83,6 +123,12 @@ impl RendererBuilder {
 
     pub fn with_border_color(mut self, color: Color) -> Self {
         self.attr.border_color = color;
+        self
+    }
+
+    pub fn with_field_dimensions(mut self, width: usize, height: usize) -> Self {
+        self.attr.width = width;
+        self.attr.height = height;
         self
     }
 }

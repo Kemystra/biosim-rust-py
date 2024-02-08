@@ -17,9 +17,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let gray = Color::new(0xaa, 0xaa, 0xaa);
     let light_orange = Color::new(0xff, 0xdd, 0x8c);
+
     let mut renderer = RendererBuilder::new()
         .with_field_color(light_orange)
         .with_border_color(gray)
+        .with_field_dimensions(FIELD_WIDTH, FIELD_HEIGHT)
         .build()?;
 
     Ok(())
