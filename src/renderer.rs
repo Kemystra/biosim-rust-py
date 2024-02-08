@@ -4,7 +4,6 @@ use std::cmp::PartialEq;
 use thiserror::Error;
 
 use crate::simulation::Simulation;
-use crate::vector2d::Vector2D;
 
 
 pub type Buffer = Vec<Color>;
