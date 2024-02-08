@@ -58,13 +58,13 @@ fn export_to_tga(buffer: Buffer, buffer_width: usize, buffer_height: usize) -> R
     // Image descriptor; set ordering to top-bottom, left-right
     header_data[17] = 0b00_10_00_00;
 
-    file_writer.write(&header_data);
+    file_writer.write(&header_data)?;
 
     for color in buffer {
-        file_writer.write(&color.byte_array());
+        file_writer.write(&color.byte_array())?;
     }
 
-    file_writer.flush();
+    file_writer.flush()?;
 
     Ok(())
 }
