@@ -104,8 +104,8 @@ impl Renderer {
         }
 
         // Draw empty field
-        for x in 0..self.buffer_width {
-            for y in 0..self.buffer_height {
+        for x in 1..(self.buffer_width - 1) {
+            for y in 1..(self.buffer_height - 1) {
                 self.plot_pixel(&mut initial_field, x, y, self.attr.field_color);
             }
         }
