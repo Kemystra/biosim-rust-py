@@ -7,7 +7,7 @@ use crate::simulation::Simulation;
 use crate::vector2d::Vector2D;
 
 
-type Buffer = Vec<Color>;
+pub type Buffer = Vec<Color>;
 
 #[derive(Debug, PartialEq, Default, Clone, Copy)]
 pub struct Color(u8, u8, u8);
