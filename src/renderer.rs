@@ -118,7 +118,7 @@ impl RendererBuilder {
         }
     }
 
-    pub fn build(mut self) -> Result<Renderer, RendererError> {
+    pub fn build(mut self) -> Result<Renderer<'static>, RendererError> {
         if self.attr.field_width == 0 || self.attr.field_height == 0 {
             return Err(RendererError::BufferTooSmall);
         }
