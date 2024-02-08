@@ -54,6 +54,7 @@ pub enum RendererError {
     RendererAlreadyInitialized
 }
 
+#[derive(Debug)]
 pub struct Renderer {
     attr: RendererAttributes,
     buffer_height: usize,
