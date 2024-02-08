@@ -83,9 +83,7 @@ impl Renderer {
             return Err(RendererError::RendererAlreadyInitialized);
         }
 
-        let mut initial_field = Vec::with_capacity(
-            self.buffer_width * self.buffer_height
-        );
+        let mut initial_field = vec![Color::default(); self.buffer_width * self.buffer_height];
 
         // Draw border
         // Top & bottom
@@ -114,7 +112,7 @@ impl Renderer {
     }
 
     pub fn render(&self, sim: &Simulation) -> Buffer {
-        let mut buffer = Vec::with_capacity(self.buffer_height * self.buffer_width);
+        let mut buffer = self.empty_field_buffer.clone();
         for c in sim.creatures() {
             let pos = c.position();
             self.plot_pixel(&mut buffer, pos.x, pos.y, c.color());
