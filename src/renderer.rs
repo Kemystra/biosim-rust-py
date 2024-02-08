@@ -119,7 +119,7 @@ impl RendererBuilder {
     }
 
     pub fn build(mut self) -> Result<Renderer, RendererError> {
-        if self.attr.width == 0 || self.attr.height == 0 {
+        if self.attr.field_width == 0 || self.attr.field_height == 0 {
             return Err(RendererError::BufferTooSmall);
         }
 
@@ -137,8 +137,8 @@ impl RendererBuilder {
     }
 
     pub fn with_field_dimensions(mut self, width: usize, height: usize) -> Self {
-        self.attr.width = width;
-        self.attr.height = height;
+        self.attr.field_width = width;
+        self.attr.field_height = height;
         self
     }
 }
