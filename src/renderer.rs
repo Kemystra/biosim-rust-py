@@ -48,8 +48,8 @@ pub enum RendererError {
     OutOfBufferRange(usize, usize),
     #[error("Trying to stamp on a block outside of field ({0}, {1})")]
     OutOfFieldRange(usize, usize),
-    #[error("Total width/height of Buffer should be bigger than 0_usize")]
-    BufferTooSmall,
+    #[error("Total width/height of Field should be bigger than 0_usize ({0}, {1})")]
+    FieldTooSmall(usize, usize),
     #[error("Trying to initialize Renderer more than once")]
     RendererAlreadyInitialized
 }
@@ -144,7 +144,7 @@ impl RendererBuilder {
 
     pub fn build(self) -> Result<Renderer, RendererError> {
         if self.attr.field_width == 0 || self.attr.field_height == 0 {
-            return Err(RendererError::BufferTooSmall);
+            return Err(RendererError::FieldTooSmall(self.attr.field_width, self.attr.field_height));
         }
 
         return Ok(Renderer::new(self.attr));
