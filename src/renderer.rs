@@ -120,7 +120,9 @@ impl Renderer {
         let mut buffer = self.empty_field_buffer.clone();
         for c in sim.creatures() {
             let pos = c.position();
-            self.plot_pixel(&mut buffer, pos.x, pos.y, c.color());
+            // Simulation aren't aware that field coordinates is smaller than the whole buffer
+            // Adding 1 helps to skip the border
+            self.plot_pixel(&mut buffer, pos.x+1, pos.y+1, c.color());
         }
 
         buffer
