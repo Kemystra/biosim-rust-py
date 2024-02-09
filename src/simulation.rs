@@ -1,7 +1,7 @@
 use std::error::Error;
 use rand::{SeedableRng, RngCore};
 use rand::seq::{IteratorRandom, SliceRandom};
-use rand_pcg::Pcg64Mcg;
+use rand_pcg::Pcg64;
 
 use crate::creature::Creature;
 use crate::genome::Genome;
@@ -17,11 +17,11 @@ pub struct Simulation {
     total_genome: usize,
 
     creatures: Vec<Creature>,
-    rng: Pcg64Mcg
+    rng: Pcg64
 }
 
 impl Simulation {
-    pub fn new(field_width: usize, field_height: usize, initial_total_creature: usize, seed: [u8; 16], total_genome: usize) -> Self {
+    pub fn new(field_width: usize, field_height: usize, initial_total_creature: usize, seed: [u8; 32], total_genome: usize) -> Self {
         let mut all_field_pos: Vec<Vector2D<usize>> = vec![];
         for x in 0..field_width {
             for y in 0..field_height {
@@ -35,7 +35,7 @@ impl Simulation {
             creatures: vec![],
             initial_total_creature,
             total_genome,
-            rng: Pcg64Mcg::from_seed(seed)
+            rng: Pcg64::from_seed(seed)
         }
     }
 
