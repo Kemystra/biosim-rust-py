@@ -1,3 +1,5 @@
+use std::error::Error;
+
 use crate::genome::Genome;
 use crate::renderer::Color;
 
@@ -22,6 +24,18 @@ pub struct Creature {
 }
 
 impl Creature {
+    pub fn new(position: Vector2D<usize>) -> Result<Self, Box<dyn Error>> {
+        let genome = Genome::new(&[0; 20]);
+        Ok(Self {
+            position,
+            genome,
+            color: genome.generate_color()?,
+            connections: vec![],
+            input_neurons: vec![],
+            internal_neurons: vec![],
+            action_neurons: vec![]
+        })
+    }
     pub fn position(&self) -> Vector2D<usize> {
         self.position
     }
