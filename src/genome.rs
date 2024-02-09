@@ -11,14 +11,12 @@ impl Genome {
     // Combine 2 bytes, and collect
     pub fn new(bytes: &[u8]) -> Self {
         let mut result = vec![];
-        let mut n: usize;
         let mut gene: u16;
 
         for i in 0..bytes.len() {
             if i % 2 == 1 { continue }
 
-            n = i*2;
-            gene = (bytes[n] as u16) | ((bytes[n+1] as u16) << 8);
+            gene = (bytes[i] as u16) | ((bytes[i+1] as u16) << 8);
             result.push(gene);
         }
 
