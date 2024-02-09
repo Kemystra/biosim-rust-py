@@ -17,7 +17,7 @@ const FIELD_HEIGHT: usize = 100;
 
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let sim = Simulation::new(FIELD_WIDTH, FIELD_HEIGHT);
+    let sim = Simulation::new(FIELD_WIDTH, FIELD_HEIGHT, vec![255]);
 
     let gray = Color::new(0xaa, 0xaa, 0xaa);
     let light_orange = Color::new(0xff, 0xdd, 0x8c);
