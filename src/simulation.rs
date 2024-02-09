@@ -1,9 +1,10 @@
 use std::error::Error;
-use rand::SeedableRng;
+use rand::{SeedableRng, RngCore};
 use rand::seq::{IteratorRandom, SliceRandom};
 use rand_pcg::Pcg64Mcg;
 
 use crate::creature::Creature;
+use crate::genome::Genome;
 use crate::vector2d::Vector2D;
 
 
@@ -37,13 +38,18 @@ impl Simulation {
 
     pub fn run(&mut self) -> Result<(), Box<dyn Error>> {
         let mut all_possible_coords = self.all_field_pos.choose_multiple(&mut self.rng, self.initial_total_creature);
+        let mut new_creature: Creature;
+        let mut genome_byte_array = [0_u8; 4];
 
         for _ in 0..self.initial_total_creature {
-            self.creatures.push(
-                // This should NEVER fail bro
-                // Like nah...
-                Creature::new(*all_possible_coords.next().unwrap())?
-            );
+            self.rng.fill_bytes(&mut genome_byte_array);
+
+            new_creature = Creature::new(
+                *all_possible_coords.next().unwrap(),
+                Genome::from_byte_slice(&genome_byte_array)
+            )?;
+
+            self.creatures.push(new_creature);
         }
 
         Ok(())

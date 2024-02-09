@@ -9,7 +9,7 @@ pub struct Genome(Vec<u16>);
 
 impl Genome {
     // Combine 2 bytes, and collect
-    pub fn new(bytes: &[u8]) -> Self {
+    pub fn from_byte_slice(bytes: &[u8]) -> Self {
         let mut result = vec![];
         let mut gene: u16;
 
@@ -69,7 +69,7 @@ mod tests {
     #[test]
     fn color_from_genome() {
         let bytes: [u8; 4] = [100, 34, 90, 210];
-        let genome = Genome::new(&bytes);
+        let genome = Genome::from_byte_slice(&bytes);
 
         let color = genome.generate_color().unwrap();
         assert_eq!(color, Color::from_xrgb_u32(2253824));

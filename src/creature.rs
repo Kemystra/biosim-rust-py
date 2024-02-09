@@ -24,8 +24,7 @@ pub struct Creature {
 }
 
 impl Creature {
-    pub fn new(position: Vector2D<usize>) -> Result<Self, Box<dyn Error>> {
-        let genome = Genome::new(&[0; 20]);
+    pub fn new(position: Vector2D<usize>, genome: Genome) -> Result<Self, Box<dyn Error>> {
         let color = genome.generate_color()?;
         Ok(Self {
             position,
