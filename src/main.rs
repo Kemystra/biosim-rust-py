@@ -12,12 +12,12 @@ mod vector2d;
 use simulation::Simulation;
 use renderer::{RendererBuilder, Color, Buffer};
 
-const FIELD_WIDTH: usize = 100;
-const FIELD_HEIGHT: usize = 100;
+const FIELD_WIDTH: usize = 50;
+const FIELD_HEIGHT: usize = 50;
 
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let sim = Simulation::new(FIELD_WIDTH, FIELD_HEIGHT, vec![255]);
+    let mut sim = Simulation::new(FIELD_WIDTH, FIELD_HEIGHT, 300, [0; 16]);
 
     let gray = Color::new(0xaa, 0xaa, 0xaa);
     let light_orange = Color::new(0xff, 0xdd, 0x8c);
@@ -29,6 +29,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .build()?;
 
     renderer.init()?;
+    sim.run()?;
     let raw_image_buffer = renderer.render(&sim);
     let (buffer_width, buffer_height) = renderer.buffer_dimensions();
 

@@ -26,10 +26,11 @@ pub struct Creature {
 impl Creature {
     pub fn new(position: Vector2D<usize>) -> Result<Self, Box<dyn Error>> {
         let genome = Genome::new(&[0; 20]);
+        let color = genome.generate_color()?;
         Ok(Self {
             position,
             genome,
-            color: genome.generate_color()?,
+            color,
             connections: vec![],
             input_neurons: vec![],
             internal_neurons: vec![],

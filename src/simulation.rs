@@ -1,25 +1,52 @@
+use std::error::Error;
+use rand::SeedableRng;
+use rand::seq::{IteratorRandom, SliceRandom};
+use rand_pcg::Pcg64Mcg;
+
 use crate::creature::Creature;
+use crate::vector2d::Vector2D;
 
 
 pub struct Simulation {
     field_width: usize,
     field_height: usize,
+    all_field_pos: Vec<Vector2D<usize>>,
+    initial_total_creature: usize,
 
     creatures: Vec<Creature>,
-    seed: Vec<u8>
+    rng: Pcg64Mcg
 }
 
 impl Simulation {
-    pub fn new(field_width: usize, field_height: usize, seed: Vec<u8>) -> Self {
+    pub fn new(field_width: usize, field_height: usize, initial_total_creature: usize, seed: [u8; 16]) -> Self {
+        let mut all_field_pos: Vec<Vector2D<usize>> = vec![];
+        for x in 0..field_width {
+            for y in 0..field_height {
+                all_field_pos.push(Vector2D::new(x, y));
+            }
+        }
+
         Self {
             field_width, field_height,
+            all_field_pos,
             creatures: vec![],
-            seed
+            initial_total_creature,
+            rng: Pcg64Mcg::from_seed(seed)
         }
     }
 
-    pub fn run(&mut self) {
-        
+    pub fn run(&mut self) -> Result<(), Box<dyn Error>> {
+        let mut all_possible_coords = self.all_field_pos.choose_multiple(&mut self.rng, self.initial_total_creature);
+
+        for _ in 0..self.initial_total_creature {
+            self.creatures.push(
+                // This should NEVER fail bro
+                // Like nah...
+                Creature::new(*all_possible_coords.next().unwrap())?
+            );
+        }
+
+        Ok(())
     }
 
     pub fn creatures(&self) -> &Vec<Creature> {
@@ -34,13 +61,13 @@ mod tests {
 
     #[test]
     fn get_field_width() {
-        let sim = Simulation::new(100,100,vec![10]);
+        let sim = Simulation::new(100,100,20,[0; 16]);
         assert_eq!(sim.field_width, 100);
     }
 
     #[test]
     fn get_field_height() {
-        let sim = Simulation::new(100,100,vec![10]);
+        let sim = Simulation::new(100,100,20,[0; 16]);
         assert_eq!(sim.field_height, 100);
     }
 }
