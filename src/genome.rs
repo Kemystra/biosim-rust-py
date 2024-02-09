@@ -1,4 +1,5 @@
 use rand::SeedableRng;
+use thiserror::Error;
 
 use crate::renderer::Color;
 use crate::neuron::Brain;
@@ -17,7 +18,7 @@ impl Genome {
             if i % 2 == 1 { continue }
 
             n = i*2;
-            gene = (bytes[n] as u16) | (bytes[n+1] as u16) << 8;
+            gene = (bytes[n] as u16) | ((bytes[n+1] as u16) << 8);
             result.push(gene);
         }
 
@@ -26,15 +27,21 @@ impl Genome {
 
     // XOR the hell out of it until a single u16 is left
     // And then multiply by 2^8 to expand into 24bit color
-    pub fn generate_color(&self) -> Result<Color, String> {
+    pub fn generate_color(&self) -> Result<Color, GenomeError> {
         // Yes, I have to own the value first
-        let val: u32 = self.0.iter().map(|x| *x).reduce(|acc, e| {
+        let mut val: u32 = self.0.iter().map(|x| *x).reduce(|acc, e| {
             acc ^ e
         })
-            .ok_or("Genome is empty".to_string())?
+            .ok_or(GenomeError::EmptyGenome)?
             .into();
 
-        Ok(Color::from_xrgb_u32(val * 256))
+        // Shift that stuff 4 bit forward, then OR it with other 8 bits somewhere
+        // Janky but bruh
+        let front_bits = (val & 0x00_00_F0_00) << 8;
+        let back_bits = val & 0x00_00_00_0F;
+        val = (val << 4) | front_bits | back_bits;
+
+        Ok(Color::from_xrgb_u32(val))
     }
 /*
     pub fn generate_brain(&self) -> Brain {
@@ -48,6 +55,12 @@ impl Genome {
     fn randomly_mutate<R: SeedableRng>(&mut self, rng: R) {
 
     }
+}
+
+#[derive(Debug, Error)]
+pub enum GenomeError {
+    #[error("Genome is empty")]
+    EmptyGenome
 }
 
 
