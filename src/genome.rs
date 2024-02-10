@@ -23,21 +23,15 @@ impl Genome {
         Genome(result)
     }
 
-    // XOR the hell out of it until a single u16 is left
-    // And then multiply by 2^8 to expand into 24bit color
+    // XOR the hell out of it until a u32 is left
     pub fn generate_color(&self) -> Result<Color, GenomeError> {
-        // Yes, I have to own the value first
-        let mut val: u32 = self.0.iter().map(|x| *x).reduce(|acc, e| {
-            acc ^ e
-        })
-            .ok_or(GenomeError::EmptyGenome)?
-            .into();
+        let mut val: u32 = (self.0[0] as u32) | ((self.0[1] as u32) << 16);
 
-        // Shift that stuff 4 bit forward, then OR it with other 8 bits somewhere
-        // Janky but bruh
-        let front_bits = (val & 0x00_00_F0_00) << 8;
-        let back_bits = val & 0x00_00_00_0F;
-        val = (val << 4) | front_bits | back_bits;
+        for i in 2..self.0.len() {
+            if i % 2 == 1 { continue }
+
+            val ^= (self.0[i] as u32) | ((self.0[i+1] as u32) << 16);
+        }
 
         Ok(Color::from_xrgb_u32(val))
     }
