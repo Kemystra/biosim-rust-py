@@ -4,20 +4,20 @@ use thiserror::Error;
 use crate::renderer::Color;
 use crate::neuron::Brain;
 
-
-pub struct Genome(Vec<u16>);
+pub type Gene = u16;
+pub struct Genome(Vec<Gene>);
 
 // Reminder: Genome uses little-endian ordering
 impl Genome {
     // Combine 2 bytes, and collect
     pub fn from_byte_slice(bytes: &[u8]) -> Self {
         let mut result = vec![];
-        let mut gene: u16;
+        let mut gene: Gene;
 
         for i in 0..bytes.len() {
             if i % 2 == 1 { continue }
 
-            gene = (bytes[i] as u16) | ((bytes[i+1] as u16) << 8);
+            gene = (bytes[i] as Gene) | ((bytes[i+1] as u16) << 8);
             result.push(gene);
         }
 
@@ -25,7 +25,7 @@ impl Genome {
     }
 
     // XOR the hell out of it until a u32 is left
-    // What's the endianness of each u16? Just gonna make it little-endian
+    // What's the endianness of each Gene? Just gonna make it little-endian
     pub fn generate_color(&self) -> Result<Color, GenomeError> {
         let mut val: u32 = (self.0[0] as u32) | ((self.0[1] as u32) << 16);
 
@@ -41,10 +41,6 @@ impl Genome {
         Ok(Color::from_xrgb_u32(val))
     }
 /*
-    pub fn generate_brain(&self) -> Brain {
-
-    }
-
     pub fn replicate<R: SeedableRng>(&mut self, rng: R) -> Self {
 
     }
@@ -72,11 +68,6 @@ mod tests {
 
         let color = genome.generate_color().unwrap();
         assert_eq!(color, Color::new(90, 34, 100));
-    }
-
-    #[test]
-    fn brain_from_genome() {
-        unimplemented!();
     }
 
     #[test]
