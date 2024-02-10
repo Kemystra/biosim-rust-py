@@ -7,6 +7,7 @@ use crate::neuron::Brain;
 
 pub struct Genome(Vec<u16>);
 
+// Reminder: Genome uses little-endian ordering
 impl Genome {
     // Combine 2 bytes, and collect
     pub fn from_byte_slice(bytes: &[u8]) -> Self {
@@ -24,13 +25,17 @@ impl Genome {
     }
 
     // XOR the hell out of it until a u32 is left
+    // What's the endianness of each u16? Just gonna make it little-endian
     pub fn generate_color(&self) -> Result<Color, GenomeError> {
         let mut val: u32 = (self.0[0] as u32) | ((self.0[1] as u32) << 16);
 
         for i in 2..self.0.len() {
             if i % 2 == 1 { continue }
 
-            val ^= (self.0[i] as u32) | ((self.0[i+1] as u32) << 16);
+            // If Genome has odd-numbered genes
+            // XOR with 0
+            // Yes some deref bullshit there
+            val ^= (self.0[i] as u32) | ((self.0.get(i+i).map_or(0, |x| *x) as u32) << 16);
         }
 
         Ok(Color::from_xrgb_u32(val))
