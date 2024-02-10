@@ -21,7 +21,10 @@ pub struct Simulation {
 }
 
 impl Simulation {
-    pub fn new(field_width: usize, field_height: usize, initial_total_creature: usize, seed: [u8; 32], total_genome: usize) -> Self {
+    pub fn new(field_width: usize, field_height: usize,
+        initial_total_creature: usize, seed: [u8; 32],
+        total_genome: usize) -> Self {
+
         let mut all_field_pos: Vec<Vector2D<usize>> = vec![];
         for x in 0..field_width {
             for y in 0..field_height {
@@ -70,13 +73,13 @@ mod tests {
 
     #[test]
     fn get_field_width() {
-        let sim = Simulation::new(100,100,20,[0; 16], 4);
+        let sim = Simulation::new(100,100,20,[0; 32], 4);
         assert_eq!(sim.field_width, 100);
     }
 
     #[test]
     fn get_field_height() {
-        let sim = Simulation::new(100,100,20,[0; 16], 4);
+        let sim = Simulation::new(100,100,20,[0; 32], 4);
         assert_eq!(sim.field_height, 100);
     }
 }
