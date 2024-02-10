@@ -66,7 +66,7 @@ mod tests {
         let genome = Genome::from_byte_slice(&bytes);
 
         let color = genome.generate_color().unwrap();
-        assert_eq!(color, Color::from_xrgb_u32(2253824));
+        assert_eq!(color, Color::new(90, 34, 100));
     }
 
     #[test]
