@@ -77,6 +77,6 @@ mod tests {
         let a = Vector2D::new(5,6);
         let b = Vector2D::new(10,2);
 
-        assert_eq!(a*b, 83);
+        assert_eq!(a*b, 62);
     }
 }
