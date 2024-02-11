@@ -35,20 +35,6 @@ impl Connection {
     }
 }
 
-macro_rules! NeuronFactory {
-    {
-        ($trait_name:ident)
-        $($neuron_name:ident),* 
-    }=> {
-        pub fn stringify!($trait_name, "Factory")(id: u8) -> Box<dyn stringify!($trait_name)> {
-            match id {
-                $(stringify!($neuron_name)::ID => stringify!($neuron_name)::new()),*,
-                _ => panic!("No ID match for ", stringify!($trait_name))
-            }
-        }
-    };
-}
-
 pub enum ConnectionType {
     InputToAction,
     InputToInternal,
