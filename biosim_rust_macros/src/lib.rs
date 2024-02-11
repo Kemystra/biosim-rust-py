@@ -10,8 +10,7 @@ use syn::punctuated::Punctuated;
 #[proc_macro_attribute]
 pub fn neuron_type(attr: TokenStream, item: TokenStream) -> TokenStream {
     let old_item = item.clone();
-    let struct_name = parse_macro_input!(item as Token);
-    println!("{}", struct_name);
+    println!("{}", item.to_string());
 
     old_item
 }

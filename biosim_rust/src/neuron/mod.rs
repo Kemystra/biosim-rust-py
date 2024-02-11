@@ -21,7 +21,7 @@ pub struct Connection {
     source_id: usize,
     sink_id: usize,
 }
-
+/*
 impl Connection {
     pub fn from_gene(gene: Gene) -> Self {
         // Gene bit layout (from front):
@@ -36,6 +36,7 @@ impl Connection {
         // bit 2-6 indicates source ID
     }
 }
+*/
 
 pub enum ConnectionType {
     InputToAction,
