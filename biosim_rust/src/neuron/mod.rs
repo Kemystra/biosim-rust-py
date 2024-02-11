@@ -54,12 +54,12 @@ mod tests {
     fn test_neuron_type_attribute() {
         // Just applying the attribute for now
         #[neuron_type]
-        struct DummyStruct;
+        struct DummyStruct(pub u8);
 
         // Use DummyStruct to trigger the attribute macro
-        let _dummy = DummyStruct;
+        let _dummy = DummyStruct(89);
 
         // Add assertions or checks as needed for testing
-        assert!(true);
+        assert!(false);
     }
 }
