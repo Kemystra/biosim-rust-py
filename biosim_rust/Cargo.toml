@@ -1,5 +1,5 @@
 [package]
-name = "neural_network_test"
+name = "biosim_rust"
 version = "0.1.0"
 edition = "2021"
 
