@@ -1,15 +1,15 @@
 pub mod internal_neuron;
 pub mod action_neuron;
-pub mod input_neuron;
+pub mod sensory_neuron;
 
 use crate::genome::Gene;
-use input_neuron::InputNeuron;
+use sensory_neuron::SensoryNeuron;
 use action_neuron::ActionNeuron;
 
 pub struct Brain {
     connections: Vec<Connection>,
     internal_neurons: Vec<internal_neuron::InternalNeuron>,
-    input_neurons: Vec<Box<dyn InputNeuron>>,
+    sensory_neurons: Vec<Box<dyn SensoryNeuron>>,
     action_neurons: Vec<Box<dyn ActionNeuron>>
 }
 

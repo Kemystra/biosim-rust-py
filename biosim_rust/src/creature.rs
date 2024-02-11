@@ -3,8 +3,8 @@ use std::error::Error;
 use crate::genome::Genome;
 use crate::renderer::Color;
 
-use crate::neuron::{Connection, input_neuron, action_neuron, internal_neuron};
-use input_neuron::InputNeuron;
+use crate::neuron::{Connection, sensory_neuron, action_neuron, internal_neuron};
+use sensory_neuron::SensoryNeuron;
 use action_neuron::ActionNeuron;
 use internal_neuron::InternalNeuron;
 
@@ -18,7 +18,7 @@ pub struct Creature {
     color: Color,
 
     connections: Vec<Connection>,
-    input_neurons: Vec<Box<dyn InputNeuron>>,
+    sensory_neurons: Vec<Box<dyn SensoryNeuron>>,
     internal_neurons: Vec<Box<InternalNeuron>>,
     action_neurons: Vec<Box<dyn ActionNeuron>>
 }
@@ -31,7 +31,7 @@ impl Creature {
             genome,
             color,
             connections: vec![],
-            input_neurons: vec![],
+            sensory_neurons: vec![],
             internal_neurons: vec![],
             action_neurons: vec![]
         })
