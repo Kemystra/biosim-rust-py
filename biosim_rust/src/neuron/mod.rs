@@ -1,3 +1,5 @@
+use biosim_rust_macros::neuron_type;
+
 pub mod internal_neuron;
 pub mod action_neuron;
 pub mod sensory_neuron;
@@ -40,4 +42,23 @@ pub enum ConnectionType {
     InputToInternal,
     InternalToInternal,
     InternalToAction,
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_neuron_type_attribute() {
+        // Just applying the attribute for now
+        #[neuron_type]
+        struct DummyStruct;
+
+        // Use DummyStruct to trigger the attribute macro
+        let _dummy = DummyStruct;
+
+        // Add assertions or checks as needed for testing
+        assert!(true);
+    }
 }

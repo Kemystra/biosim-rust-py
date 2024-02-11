@@ -10,6 +10,7 @@ num = "0.4.1"
 rand = "0.8.5"
 rand_pcg = "0.3.1"
 thiserror = "1.0.51"
+biosim_rust_macros = { path = "/home/k3mystra/Coding Projects/Rust/neural_network_test/biosim_rust_macros" }
 
 [profile.dev]
 debug = 1
