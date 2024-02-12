@@ -7,10 +7,11 @@ pub mod sensory_neuron;
 use crate::genome::Gene;
 use sensory_neuron::SensoryNeuron;
 use action_neuron::ActionNeuron;
+use internal_neuron::InternalNeuron;
 
 pub struct Brain {
     connections: Vec<Connection>,
-    internal_neurons: Vec<internal_neuron::InternalNeuron>,
+    internal_neurons: Vec<InternalNeuron>,
     sensory_neurons: Vec<Box<dyn SensoryNeuron>>,
     action_neurons: Vec<Box<dyn ActionNeuron>>
 }
@@ -54,7 +55,7 @@ mod tests {
         const ID: u8;
     }
 
-    #[neuron_type(ActionNeuron, 1)]
+    #[neuron_type(1)]
     struct MoveNeuron{}
 
     #[test]
@@ -62,6 +63,6 @@ mod tests {
         // Use the trait method and access the constant
         let id = MoveNeuron::ID;
 
-        assert!(id, 1);
+        assert_eq!(id, 1);
     }
 }
