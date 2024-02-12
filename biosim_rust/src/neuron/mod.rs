@@ -46,14 +46,14 @@ pub enum ConnectionType {
     InternalToAction,
 }
 
+pub trait NeuronType {
+    const ID: u8;
+}
+
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    trait NeuronType {
-        const ID: u8;
-    }
 
     #[neuron_type(1)]
     struct MoveNeuron{}
