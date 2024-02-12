@@ -50,16 +50,18 @@ pub enum ConnectionType {
 mod tests {
     use super::*;
 
+    trait NeuronType {
+        const ID: u8;
+    }
+
+    #[neuron_type(ActionNeuron, 1)]
+    struct MoveNeuron{}
+
     #[test]
-    fn test_neuron_type_attribute() {
-        // Just applying the attribute for now
-        #[neuron_type]
-        struct DummyStruct(pub u8);
+    fn neuron_type_trait_impl() {
+        // Use the trait method and access the constant
+        let id = MoveNeuron::ID;
 
-        // Use DummyStruct to trigger the attribute macro
-        let _dummy = DummyStruct(89);
-
-        // Add assertions or checks as needed for testing
-        assert!(false);
+        assert!(id, 1);
     }
 }
