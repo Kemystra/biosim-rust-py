@@ -1,5 +1,3 @@
-use biosim_rust_macros::neuron_type;
-
 pub mod internal_neuron;
 pub mod action_neuron;
 pub mod sensory_neuron;
@@ -12,8 +10,8 @@ use internal_neuron::InternalNeuron;
 pub struct Brain {
     connections: Vec<Connection>,
     internal_neurons: Vec<InternalNeuron>,
-    sensory_neurons: Vec<Box<dyn SensoryNeuron>>,
-    action_neurons: Vec<Box<dyn ActionNeuron>>
+    sensory_neurons: Vec<SensoryNeuron>,
+    action_neurons: Vec<ActionNeuron>
 }
 
 pub struct Connection {
@@ -44,25 +42,4 @@ pub enum ConnectionType {
     InputToInternal,
     InternalToInternal,
     InternalToAction,
-}
-
-pub trait NeuronType {
-    const ID: u8;
-}
-
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[neuron_type(1)]
-    struct MoveNeuron{}
-
-    #[test]
-    fn neuron_type_trait_impl() {
-        // Use the trait method and access the constant
-        let id = MoveNeuron::ID;
-
-        assert_eq!(id, 1);
-    }
 }

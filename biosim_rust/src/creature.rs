@@ -3,24 +3,16 @@ use std::error::Error;
 use crate::genome::Genome;
 use crate::renderer::Color;
 
-use crate::neuron::{Connection, sensory_neuron, action_neuron, internal_neuron};
-use sensory_neuron::SensoryNeuron;
-use action_neuron::ActionNeuron;
-use internal_neuron::InternalNeuron;
+use crate::neuron::Brain;
 
 use crate::vector2d::Vector2D;
 
 
 pub struct Creature {
     position: Vector2D<usize>,
-
     genome: Genome,
-    color: Color,
-
-    connections: Vec<Connection>,
-    sensory_neurons: Vec<Box<dyn SensoryNeuron>>,
-    internal_neurons: Vec<Box<InternalNeuron>>,
-    action_neurons: Vec<Box<dyn ActionNeuron>>
+    brain: Brain,
+    color: Color
 }
 
 impl Creature {
@@ -29,11 +21,8 @@ impl Creature {
         Ok(Self {
             position,
             genome,
-            color,
-            connections: vec![],
-            sensory_neurons: vec![],
-            internal_neurons: vec![],
-            action_neurons: vec![]
+            brain: Brain::new(),
+            color
         })
     }
     pub fn position(&self) -> Vector2D<usize> {
