@@ -39,7 +39,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn export_to_tga(buffer: Buffer, buffer_width: usize, buffer_height: usize) -> Result<(), Box<dyn Error>> {
-    let mut file_writer = BufWriter::new(File::create("test.tga")?);
+    let mut file_writer = BufWriter::new(File::create("./output/test.tga")?);
     let mut header_data: [u8; 18] = [0; 18];
 
     // Image type: uncompressed true-color

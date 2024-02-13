@@ -7,3 +7,6 @@ result.perf
 
 # Ignore flamegraph photo
 flamegraph.svg
+
+# Ignore output files
+output/
