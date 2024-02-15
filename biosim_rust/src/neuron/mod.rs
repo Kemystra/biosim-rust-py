@@ -3,11 +3,12 @@ pub mod action_neuron;
 pub mod sensory_neuron;
 
 use crate::genome::Gene;
-use sensory_neuron::SensoryNeuron;
-use action_neuron::ActionNeuron;
+use sensory_neuron::{SensoryNeuron, TOTAL_SENSORY_NEURON_VARIANT};
+use action_neuron::{ActionNeuron, TOTAL_ACTION_NEURON_VARIANT};
 use internal_neuron::InternalNeuron;
 
-pub type InternalNeuronID = u8;
+pub type InternalNeuronID = usize;
+const MAX_INTERNAL_NEURONS: usize = 3;
 
 pub struct Brain {
     connections: Vec<Connection>,
@@ -20,22 +21,51 @@ pub struct Connection {
     connection_type: ConnectionType,
     weight: f64,
 }
-/*
+
 impl Connection {
     pub fn from_gene(gene: Gene) -> Self {
         // Gene bit layout (from front):
         // bit 0-1 indicates ConnectionType
-        let connection_type = match gene >> 14 {
-            0 => ConnectionType::SensoryToAction,
-            1 => ConnectionType::SensoryToInternal,
-            2 => ConnectionType::InternalToInternal,
-            3 => ConnectionType::InternalToAction
+        // bit 2-6 indicates source ID
+        // bit 7-11 indicates sink ID
+        // bit 12-15 indicates weight, a 4-bit signed integer
+        let connection_type_id = gene >> 14;
+        let source_id = ((gene >> 9) & 0b11111) as usize;
+        let sink_id = ((gene >> 4) & 0b11111) as usize;
+        let weight: f64 = ((gene & 0b1111) as i8 - 8).into();
+
+        // This is kinda ugly, but it (might) work
+        // Btw, should never EVER fail!
+        let conn_type = match connection_type_id {
+            0 => ConnectionType::SensoryToAction {
+                source: SensoryNeuron::from_id(source_id % TOTAL_SENSORY_NEURON_VARIANT).unwrap(),
+                sink: ActionNeuron::from_id(sink_id % TOTAL_ACTION_NEURON_VARIANT).unwrap()
+            },
+
+            1 => ConnectionType::SensoryToInternal {
+                source: SensoryNeuron::from_id(source_id % TOTAL_SENSORY_NEURON_VARIANT).unwrap(),
+                sink: sink_id % MAX_INTERNAL_NEURONS
+            },
+
+            2 => ConnectionType::InternalToInternal {
+                source: source_id % MAX_INTERNAL_NEURONS,
+                sink: sink_id % MAX_INTERNAL_NEURONS
+            },
+
+            3 => ConnectionType::InternalToAction {
+                source: source_id % MAX_INTERNAL_NEURONS,
+                sink: ActionNeuron::from_id(sink_id % TOTAL_ACTION_NEURON_VARIANT).unwrap()
+            },
+
+            _ => panic!("WTF happened here!")
         };
 
-        // bit 2-6 indicates source ID
+        Self {
+            connection_type: conn_type,
+            weight
+        }
     }
 }
-*/
 
 pub enum ConnectionType {
     SensoryToAction {source: SensoryNeuron, sink: ActionNeuron},
