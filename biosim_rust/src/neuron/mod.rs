@@ -17,8 +17,6 @@ pub struct Brain {
 pub struct Connection {
     connection_type: ConnectionType,
     weight: f64,
-    source_id: usize,
-    sink_id: usize,
 }
 /*
 impl Connection {
@@ -26,8 +24,8 @@ impl Connection {
         // Gene bit layout (from front):
         // bit 0-1 indicates ConnectionType
         let connection_type = match gene >> 14 {
-            0 => ConnectionType::InputToAction,
-            1 => ConnectionType::InputToInternal,
+            0 => ConnectionType::SensoryToAction,
+            1 => ConnectionType::SensoryToInternal,
             2 => ConnectionType::InternalToInternal,
             3 => ConnectionType::InternalToAction
         };
@@ -38,8 +36,8 @@ impl Connection {
 */
 
 pub enum ConnectionType {
-    InputToAction,
-    InputToInternal,
-    InternalToInternal,
-    InternalToAction,
+    SensoryToAction {source: SensoryNeuron, sink: ActionNeuron},
+    SensoryToInternal {source: SensoryNeuron, sink: u8},
+    InternalToInternal {source: u8, sink: u8},
+    InternalToAction {source: u8, sink: ActionNeuron},
 }
