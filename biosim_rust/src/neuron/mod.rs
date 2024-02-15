@@ -29,14 +29,14 @@ impl Connection {
         // bit 2-6 indicates source ID
         // bit 7-11 indicates sink ID
         // bit 12-15 indicates weight, a 4-bit signed integer
-        let connection_type_id = gene >> 14;
-        let source_id = ((gene >> 9) & 0b11111) as usize;
-        let sink_id = ((gene >> 4) & 0b11111) as usize;
-        let weight: f64 = ((gene & 0b1111) as i8 - 8).into();
+        let conn_type_id = gene >> 14;
+        let source_id = ((gene >> 9) & 32) as usize;
+        let sink_id = ((gene >> 4) & 32) as usize;
+        let weight: f64 = ((gene & 16) as i8 - 8).into();
 
         // This is kinda ugly, but it (might) work
         // Btw, should never EVER fail!
-        let conn_type = match connection_type_id {
+        let conn_type = match conn_type_id {
             0 => ConnectionType::SensoryToAction {
                 source: SensoryNeuron::from_id(source_id % TOTAL_SENSORY_NEURON_VARIANT).unwrap(),
                 sink: ActionNeuron::from_id(sink_id % TOTAL_ACTION_NEURON_VARIANT).unwrap()
