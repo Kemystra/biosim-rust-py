@@ -2,11 +2,13 @@ use std::error::Error;
 use rand::{SeedableRng, RngCore};
 use rand::seq::SliceRandom;
 use rand_pcg::Pcg64;
+use rand_chacha::ChaCha8Rng;
 
 use crate::creature::Creature;
 use crate::genome::Genome;
 use crate::vector2d::Vector2D;
 
+pub type RngSeed = [u8; 32];
 
 pub struct Simulation {
     field_width: usize,
@@ -22,7 +24,7 @@ pub struct Simulation {
 
 impl Simulation {
     pub fn new(field_width: usize, field_height: usize,
-        initial_total_creature: usize, seed: [u8; 32],
+        initial_total_creature: usize, seed: RngSeed,
         total_genome: usize) -> Self {
 
         let mut all_field_pos: Vec<Vector2D<usize>> = vec![];
@@ -47,12 +49,18 @@ impl Simulation {
         let mut new_creature: Creature;
         let mut genome_byte_array = vec![0_u8; self.total_genome];
 
-        for _ in 0..self.initial_total_creature {
+        let current_gen_seed = self.rng.next_u64();
+        let mut creature_rng;
+
+        for i in 0..self.initial_total_creature {
+            creature_rng = ChaCha8Rng::seed_from_u64(current_gen_seed);
+            creature_rng.set_stream(i as u64);
             self.rng.fill_bytes(&mut genome_byte_array);
 
             new_creature = Creature::new(
                 *all_possible_coords.next().unwrap(),
-                Genome::from_byte_slice(&genome_byte_array)
+                Genome::from_byte_slice(&genome_byte_array),
+                creature_rng
             )?;
 
             self.creatures.push(new_creature);

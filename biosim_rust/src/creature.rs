@@ -1,4 +1,5 @@
 use std::error::Error;
+use rand_chacha::ChaCha8Rng;
 
 use crate::genome::Genome;
 use crate::renderer::Color;
@@ -10,18 +11,21 @@ pub struct Creature {
     position: Vector2D<usize>,
     genome: Genome,
     brain: Brain,
-    color: Color
+    color: Color,
+    rng: ChaCha8Rng
 }
 
 impl Creature {
-    pub fn new(position: Vector2D<usize>, genome: Genome) -> Result<Self, Box<dyn Error>> {
+    pub fn new(position: Vector2D<usize>, genome: Genome, unique_stream_rng: ChaCha8Rng) -> Result<Self, Box<dyn Error>> {
         let color = genome.generate_color()?;
         let brain = Brain::from_genome(&genome);
+
         Ok(Self {
             position,
             genome,
             brain,
-            color
+            color,
+            rng: unique_stream_rng
         })
     }
 
