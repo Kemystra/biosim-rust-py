@@ -2,9 +2,7 @@ use std::error::Error;
 
 use crate::genome::Genome;
 use crate::renderer::Color;
-
 use crate::neuron::Brain;
-
 use crate::vector2d::Vector2D;
 
 
@@ -26,6 +24,7 @@ impl Creature {
             color
         })
     }
+
     pub fn position(&self) -> Vector2D<usize> {
         self.position
     }

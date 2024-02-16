@@ -1,6 +1,6 @@
 use std::error::Error;
 use rand::{SeedableRng, RngCore};
-use rand::seq::{IteratorRandom, SliceRandom};
+use rand::seq::SliceRandom;
 use rand_pcg::Pcg64;
 
 use crate::creature::Creature;
