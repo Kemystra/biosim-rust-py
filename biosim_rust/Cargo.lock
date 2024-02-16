@@ -15,6 +15,7 @@ dependencies = [
  "biosim_rust_macros",
  "num",
  "rand",
+ "rand_chacha",
  "rand_pcg",
  "thiserror",
 ]
