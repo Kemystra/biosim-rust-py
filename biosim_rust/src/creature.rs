@@ -18,10 +18,11 @@ pub struct Creature {
 impl Creature {
     pub fn new(position: Vector2D<usize>, genome: Genome) -> Result<Self, Box<dyn Error>> {
         let color = genome.generate_color()?;
+        let brain = Brain::from_genome(&genome);
         Ok(Self {
             position,
             genome,
-            brain: Brain::new(),
+            brain,
             color
         })
     }

@@ -24,6 +24,10 @@ impl Genome {
         Genome(result)
     }
 
+    pub fn genes(&self) -> &Vec<Gene> {
+        &self.0
+    }
+
     // XOR the hell out of it until a u32 is left
     // What's the endianness of each Gene? Just gonna make it little-endian
     pub fn generate_color(&self) -> Result<Color, GenomeError> {

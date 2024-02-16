@@ -1,8 +1,10 @@
+use std::cmp::Ordering;
+
 pub mod internal_neuron;
 pub mod action_neuron;
 pub mod sensory_neuron;
 
-use crate::genome::Gene;
+use crate::genome::{Gene, Genome};
 use sensory_neuron::{SensoryNeuron, TOTAL_SENSORY_NEURON_VARIANT};
 use action_neuron::{ActionNeuron, TOTAL_ACTION_NEURON_VARIANT};
 use internal_neuron::InternalNeuron;
@@ -13,8 +15,23 @@ const MAX_INTERNAL_NEURONS: usize = 3;
 pub struct Brain {
     connections: Vec<Connection>,
     internal_neurons: Vec<InternalNeuron>,
-    sensory_neurons: Vec<SensoryNeuron>,
-    action_neurons: Vec<ActionNeuron>
+}
+
+impl Brain {
+    pub fn from_genome(genome: &Genome) -> Self {
+        let mut connections: Vec<Connection> = genome.genes()
+            .iter()
+            .map(|gene| Connection::from_gene(*gene))
+            .collect();
+
+        // The hard part: sorting the Connections
+        connections[..].sort_by(|a,b| a.connection_type.partial_cmp(&b.connection_type).unwrap());
+
+        Brain {
+            connections,
+            internal_neurons: vec![InternalNeuron::new(); MAX_INTERNAL_NEURONS]
+        }
+    }
 }
 
 pub struct Connection {
