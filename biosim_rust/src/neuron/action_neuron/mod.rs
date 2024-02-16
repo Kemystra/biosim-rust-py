@@ -5,6 +5,7 @@ use crate::creature::Creature;
 
 
 #[enum_from_id]
+#[derive(PartialEq)]
 pub enum ActionNeuron {
     MoveNorth,
     MoveSouth,
