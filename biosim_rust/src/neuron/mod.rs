@@ -37,6 +37,34 @@ impl Brain {
             internal_neurons: vec![InternalNeuron::new(); MAX_INTERNAL_NEURONS]
         }
     }
+    // Check each connections that has InternalNeuron
+    // and mark whether it has valid input/output
+    fn count_neuron_input_output(
+        conn: &Connection,
+        neurons_input_count: &mut HashMap<InternalNeuronID, usize>,
+        neurons_output_count: &mut HashMap<InternalNeuronID, usize>
+    ) -> () {
+
+        // Since the InternalNeuronID has been modulus to MAX_INTERNAL_NEURONS
+        // we don't have to worry about non-existent key
+        match conn.connection_type {
+            ConnectionType::SensoryToInternal { sink, .. } => {
+                *neurons_input_count.get_mut(&sink).unwrap() += 1;
+            },
+
+            ConnectionType::InternalToAction { source, .. } => {
+                *neurons_output_count.get_mut(&source).unwrap() += 1;
+            },
+
+            // If it is a loopback to itself, ignore
+            ConnectionType::InternalToInternal { source, sink } if source != sink => {
+                *neurons_output_count.get_mut(&source).unwrap() += 1;
+                *neurons_input_count.get_mut(&sink).unwrap() += 1;
+            },
+
+            _ => {}
+        }
+    }
 }
 
 pub struct Connection {
