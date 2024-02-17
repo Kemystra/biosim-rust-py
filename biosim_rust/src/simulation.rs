@@ -8,8 +8,6 @@ use crate::creature::Creature;
 use crate::genome::Genome;
 use crate::vector2d::Vector2D;
 
-pub type RngSeed = [u8; 32];
-
 pub struct Simulation {
     field_width: usize,
     field_height: usize,
