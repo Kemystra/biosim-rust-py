@@ -1,4 +1,5 @@
 use std::cmp::Ordering;
+use std::collections::HashMap;
 
 pub mod internal_neuron;
 pub mod action_neuron;
@@ -24,7 +25,11 @@ impl Brain {
             .map(|gene| Connection::from_gene(*gene))
             .collect();
 
-        // The hard part: sorting the Connections
+        // Sorting the connections to ensure:
+        // 1. Read SensoryNeuron
+        // 2. Go through InternalNeuron
+        // 3. Send to ActionNeuron
+        // Direct Sensory-Action connections are executed immediately
         connections[..].sort_by(|a,b| a.connection_type.partial_cmp(&b.connection_type).unwrap());
 
         Brain {
