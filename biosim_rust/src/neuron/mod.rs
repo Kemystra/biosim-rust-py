@@ -192,6 +192,10 @@ impl Connection {
             weight
         }
     }
+
+    pub fn connection_type(&self) -> &ConnectionType {
+        &self.connection_type
+    }
 }
 
 #[derive(PartialEq)]
