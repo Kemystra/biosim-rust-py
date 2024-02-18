@@ -29,8 +29,8 @@ impl Creature {
         })
     }
 
-    pub fn position(&self) -> Vector2D<usize> {
-        self.position
+    pub fn position(&self) -> &Vector2D<usize> {
+        &self.position
     }
 
     pub fn color(&self) -> Color {
