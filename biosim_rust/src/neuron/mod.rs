@@ -19,6 +19,10 @@ pub struct Brain {
 }
 
 impl Brain {
+    pub fn connections(&self) -> &Vec<Connection> {
+        &self.connections
+    }
+
     pub fn from_genome(genome: &Genome) -> Self {
         let mut connections: Vec<Connection> = genome.genes()
             .iter()

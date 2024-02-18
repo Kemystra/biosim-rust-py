@@ -36,4 +36,8 @@ impl Creature {
     pub fn color(&self) -> Color {
         self.color
     }
+
+    pub fn brain(&self) -> &Brain {
+        &self.brain
+    }
 }
