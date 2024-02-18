@@ -44,7 +44,7 @@ impl Simulation {
         }
     }
 
-    pub fn run(&mut self) -> Result<(), Box<dyn Error>> {
+    pub fn init(&mut self) -> Result<(), Box<dyn Error>> {
         let mut all_possible_coords = self.all_field_pos.choose_multiple(&mut self.rng, self.initial_total_creature);
         let mut new_creature: Creature;
         let mut genome_byte_array = vec![0_u8; self.total_genome];

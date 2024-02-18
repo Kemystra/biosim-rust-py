@@ -29,7 +29,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .build()?;
 
     renderer.init()?;
-    sim.run()?;
+    sim.init()?;
     let raw_image_buffer = renderer.render(&sim);
     let (buffer_width, buffer_height) = renderer.buffer_dimensions();
 
