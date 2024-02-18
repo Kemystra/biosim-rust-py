@@ -37,6 +37,22 @@ impl Brain {
             internal_neurons: vec![InternalNeuron::new(); MAX_INTERNAL_NEURONS]
         }
     }
+
+    fn recursive_brain_trimming(
+        connections: &mut Vec<Connection>,
+        neurons_input_count: &mut HashMap<InternalNeuronID, usize>,
+        neurons_output_count: &mut HashMap<InternalNeuronID, usize>
+    ) -> () {
+
+        if neurons_input_count.values().any(|x| x == &0) || neurons_output_count.values().any(|x| x == &0) {
+            Self::recursive_brain_trimming(connections, neurons_input_count, neurons_output_count);
+        }
+
+        connections.retain(|conn| {
+            Self::is_connection_useful(conn, neurons_input_count, neurons_output_count)
+        });
+    }
+
     fn is_connection_useful(
         conn: &Connection,
         neurons_input_count: &mut HashMap<InternalNeuronID, usize>,
