@@ -32,6 +32,27 @@ impl Brain {
         // Direct Sensory-Action connections are executed immediately
         connections[..].sort_by(|a,b| a.connection_type.partial_cmp(&b.connection_type).unwrap());
 
+        // Trimming unnecessary connections and neurons
+        // This is when:
+        // InternalToAction => `source` has no input
+        //
+        // InternalToInternal => `source` has no input OR `sink` has no output
+        // (Special case: if `source` and `sink` is the same, and no other connections to that
+        // neuron, also trim that)
+        //
+        // SensoryToInternal => `sink` has no output
+
+        // Map InternalNeuronID to its input/output count
+        let mut neurons_input_count: HashMap<InternalNeuronID, usize> = (0..MAX_INTERNAL_NEURONS)
+            .into_iter().map(|num| (num, 0)).collect();
+        let mut neurons_output_count = neurons_input_count.clone();
+
+        for conn in &connections {
+            Self::count_neuron_input_output(conn, &mut neurons_input_count, &mut neurons_output_count);
+        }
+
+        Self::recursive_brain_trimming(&mut connections, &mut neurons_input_count, &mut neurons_output_count);
+
         Brain {
             connections,
             internal_neurons: vec![InternalNeuron::new(); MAX_INTERNAL_NEURONS]
