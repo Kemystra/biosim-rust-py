@@ -37,6 +37,42 @@ impl Brain {
             internal_neurons: vec![InternalNeuron::new(); MAX_INTERNAL_NEURONS]
         }
     }
+    fn is_connection_useful(
+        conn: &Connection,
+        neurons_input_count: &mut HashMap<InternalNeuronID, usize>,
+        neurons_output_count: &mut HashMap<InternalNeuronID, usize>
+    ) -> bool {
+
+        // Alright this one is kinda twizzy
+        // If it's SensoryToInternal, then we need to check if the InternalNeuron has OUTPUT, not INPUT
+        // Vice versa for InternalToAction
+        // Very important to remember as the match statement here is an inverse of the
+        // count_neuron_input_output() function
+        match conn.connection_type {
+            ConnectionType::SensoryToInternal { sink, .. } => neurons_output_count.get(&sink) != Some(&0),
+            ConnectionType::InternalToAction { source, .. } => neurons_input_count.get(&source) != Some(&0),
+
+            ConnectionType::InternalToInternal { source, sink } => {
+                // If the source neuron has no input...
+                if neurons_input_count.get(&source) == Some(&0) {
+                    // The sink neuron will also lose 1 input
+                    *neurons_input_count.get_mut(&sink).unwrap() -= 1;
+                    return false;
+                }
+                // If the sink neuron has no output...
+                else if neurons_output_count.get(&sink) == Some(&0) {
+                    // The source neuron will also lose 1 output
+                    *neurons_output_count.get_mut(&source).unwrap() -= 1;
+                    return false;
+                }
+
+                true
+            },
+
+            _ => true
+        }
+    }
+
     // Check each connections that has InternalNeuron
     // and mark whether it has valid input/output
     fn count_neuron_input_output(
