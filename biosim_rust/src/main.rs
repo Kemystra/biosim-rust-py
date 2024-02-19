@@ -52,6 +52,7 @@ fn export_creatures_brain(sim: &Simulation) -> Result<(), Box<dyn Error>> {
         }
 
         file_writer.write(&parsed_conns.as_bytes())?;
+        parsed_conns.clear();
     }
 
     file_writer.flush()?;
@@ -65,7 +66,7 @@ fn parse_connection(conn: &Connection) -> String {
         SensoryToAction { source, sink } => format!("0\t{:?}\t{:?}\n", source, sink),
         SensoryToInternal { source, sink } => format!("1\t{:?}\t{:?}\n", source, sink),
         InternalToInternal { source, sink } => format!("2\t{:?}\t{:?}\n", source, sink),
-        InternalToAction { source, sink } => format!("0\t{:?}\t{:?}\n", source, sink)
+        InternalToAction { source, sink } => format!("3\t{:?}\t{:?}\n", source, sink)
     }
 }
 
