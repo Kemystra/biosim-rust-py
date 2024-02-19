@@ -41,8 +41,8 @@ impl Brain {
         // InternalToAction => `source` has no input
         //
         // InternalToInternal => `source` has no input OR `sink` has no output
-        // (Special case: if `source` and `sink` is the same, and no other connections to that
-        // neuron, also trim that)
+        // (If `source` and `sink` is the same, it implies a loopback to itself. That is
+        // useless without other separate inputs/outputs)
         //
         // SensoryToInternal => `sink` has no output
 
