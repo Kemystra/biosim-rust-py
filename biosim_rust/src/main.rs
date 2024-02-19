@@ -9,6 +9,7 @@ mod neuron;
 mod renderer;
 mod vector2d;
 
+use neuron::{Connection, ConnectionType};
 use simulation::Simulation;
 use renderer::{RendererBuilder, Color, Buffer};
 
@@ -33,9 +34,37 @@ fn main() -> Result<(), Box<dyn Error>> {
     let raw_image_buffer = renderer.render(&sim);
     let (buffer_width, buffer_height) = renderer.buffer_dimensions();
 
+    export_creatures_brain(&sim)?;
     export_to_tga(raw_image_buffer, buffer_width, buffer_height)?;
 
     Ok(())
+}
+
+fn export_creatures_brain(sim: &Simulation) -> Result<(), Box<dyn Error>> {
+    let mut file_writer = BufWriter::new(File::create("./output/brain.txt")?);
+    let mut parsed_conns: String = "".to_string();
+
+    for (i, creature) in sim.creatures().iter().enumerate() {
+        file_writer.write(format!("Creature #{}\n", i).as_bytes())?;
+
+        for conn in creature.brain().connections() {
+            parsed_conns += &parse_connection(conn);
+        }
+
+        file_writer.write(&parsed_conns.as_bytes())?;
+    }
+
+    Ok(())
+}
+
+fn parse_connection(conn: &Connection) -> String {
+    use ConnectionType::*;
+    match conn.connection_type() {
+        SensoryToAction { source, sink } => format!("0\t{:?}\t{:?}\n", source, sink),
+        SensoryToInternal { source, sink } => format!("1\t{:?}\t{:?}\n", source, sink),
+        InternalToInternal { source, sink } => format!("2\t{:?}\t{:?}\n", source, sink),
+        InternalToAction { source, sink } => format!("0\t{:?}\t{:?}\n", source, sink)
+    }
 }
 
 fn export_to_tga(buffer: Buffer, buffer_width: usize, buffer_height: usize) -> Result<(), Box<dyn Error>> {
