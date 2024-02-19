@@ -55,7 +55,13 @@ impl Brain {
             Self::count_neuron_input_output(conn, &mut neurons_input_count, &mut neurons_output_count);
         }
 
-        Self::recursive_brain_trimming(&mut connections, &mut neurons_input_count, &mut neurons_output_count);
+        let original_length = connections.len();
+        Self::recursive_brain_trimming(
+            &mut connections,
+            original_length,
+            &mut neurons_input_count,
+            &mut neurons_output_count
+        );
 
         Brain {
             connections,
@@ -65,17 +71,19 @@ impl Brain {
 
     fn recursive_brain_trimming(
         connections: &mut Vec<Connection>,
+        original_length: usize,
         neurons_input_count: &mut HashMap<InternalNeuronID, usize>,
         neurons_output_count: &mut HashMap<InternalNeuronID, usize>
     ) -> () {
 
-        if neurons_input_count.values().any(|x| x == &0) || neurons_output_count.values().any(|x| x == &0) {
-            Self::recursive_brain_trimming(connections, neurons_input_count, neurons_output_count);
-        }
-
         connections.retain(|conn| {
             Self::is_connection_useful(conn, neurons_input_count, neurons_output_count)
         });
+
+        if connections.len() < original_length {
+            let original_length = connections.len();
+            Self::recursive_brain_trimming(connections, original_length, neurons_input_count, neurons_output_count);
+        }
     }
 
     fn is_connection_useful(
