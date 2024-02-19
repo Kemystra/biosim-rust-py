@@ -102,24 +102,41 @@ impl Brain {
             ConnectionType::InternalToAction { source, .. } => neurons_input_count.get(&source) != Some(&0),
 
             ConnectionType::InternalToInternal { source, sink } => {
-                // If the source neuron has no input...
-                if neurons_input_count.get(&source) == Some(&0) {
-                    // The sink neuron will also lose 1 input
-                    *neurons_input_count.get_mut(&sink).unwrap() -= 1;
-                    return false;
-                }
-                // If the sink neuron has no output...
-                else if neurons_output_count.get(&sink) == Some(&0) {
-                    // The source neuron will also lose 1 output
-                    *neurons_output_count.get_mut(&source).unwrap() -= 1;
-                    return false;
-                }
-
-                true
-            },
+                Self::handle_interconnection_case(source, sink, neurons_input_count, neurons_output_count)
+            }
 
             _ => true
         }
+    }
+
+    fn handle_interconnection_case(
+        source: InternalNeuronID, sink: InternalNeuronID,
+        neurons_input_count: &mut HashMap<InternalNeuronID, usize>,
+        neurons_output_count: &mut HashMap<InternalNeuronID, usize>
+    ) -> bool {
+
+        // If the source neuron has no input...
+        if neurons_input_count.get(&source) == Some(&0) {
+            // The sink neuron will also lose 1 input
+            let sink_input_count = *neurons_input_count.get(&sink).unwrap();
+            if let Some(num) = sink_input_count.checked_sub(1) {
+                neurons_input_count.insert(sink, num).unwrap();
+            }
+
+            return false;
+        }
+        // If the sink neuron has no output...
+        else if neurons_output_count.get(&sink) == Some(&0) {
+            // The source neuron will also lose 1 output
+            let source_output_count = *neurons_output_count.get(&source).unwrap();
+            if let Some(num) = source_output_count.checked_sub(1) {
+                neurons_output_count.insert(source, num).unwrap();
+            }
+
+            return false;
+        }
+
+        true
     }
 
     // Check each connections that has InternalNeuron
