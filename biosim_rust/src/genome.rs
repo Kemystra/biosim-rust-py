@@ -17,7 +17,7 @@ impl Genome {
         for i in 0..bytes.len() {
             if i % 2 == 1 { continue }
 
-            gene = (bytes[i] as Gene) | ((bytes[i+1] as u16) << 8);
+            gene = (bytes[i] as Gene) | ((bytes[i+1] as Gene) << 8);
             result.push(gene);
         }
 
