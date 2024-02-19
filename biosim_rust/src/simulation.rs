@@ -16,7 +16,7 @@ pub struct Simulation {
     all_field_pos: Vec<Vector2D<usize>>,
 
     initial_total_creature: usize,
-    total_genome: usize,
+    total_genes: usize,
 
     creatures: Vec<Creature>,
     rng: Pcg64
@@ -25,7 +25,7 @@ pub struct Simulation {
 impl Simulation {
     pub fn new(field_width: usize, field_height: usize,
         initial_total_creature: usize, seed: RngSeed,
-        total_genome: usize) -> Self {
+        total_genes: usize) -> Self {
 
         let mut all_field_pos: Vec<Vector2D<usize>> = vec![];
         for x in 0..field_width {
@@ -39,7 +39,7 @@ impl Simulation {
             all_field_pos,
             creatures: vec![],
             initial_total_creature,
-            total_genome,
+            total_genes,
             rng: Pcg64::from_seed(seed)
         }
     }
@@ -47,7 +47,8 @@ impl Simulation {
     pub fn init(&mut self) -> Result<(), Box<dyn Error>> {
         let mut all_possible_coords = self.all_field_pos.choose_multiple(&mut self.rng, self.initial_total_creature);
         let mut new_creature: Creature;
-        let mut genome_byte_array = vec![0_u8; self.total_genome];
+        // Gene is u16, so you need 2 u8 for each Gene
+        let mut genome_byte_array = vec![0_u8; self.total_genes * 2];
 
         let current_gen_seed = self.rng.next_u64();
         let mut creature_rng;
