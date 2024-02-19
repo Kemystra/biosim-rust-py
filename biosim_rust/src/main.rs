@@ -54,6 +54,8 @@ fn export_creatures_brain(sim: &Simulation) -> Result<(), Box<dyn Error>> {
         file_writer.write(&parsed_conns.as_bytes())?;
     }
 
+    file_writer.flush()?;
+
     Ok(())
 }
 
