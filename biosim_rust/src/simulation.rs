@@ -79,6 +79,14 @@ impl Simulation {
     pub fn creatures(&self) -> &Vec<Creature> {
         &self.creatures
     }
+
+    pub fn field_width(&self) -> usize {
+        self.field_width
+    }
+
+    pub fn field_height(&self) -> usize {
+        self.field_height
+    }
 }
 
 
