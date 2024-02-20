@@ -11,7 +11,7 @@ use action_neuron::{ActionNeuron, TOTAL_ACTION_NEURON_VARIANT};
 use internal_neuron::InternalNeuron;
 
 pub type InternalNeuronID = usize;
-const MAX_INTERNAL_NEURONS: usize = 5;
+const MAX_INTERNAL_NEURONS: usize = 4;
 
 pub struct Brain {
     connections: Vec<Connection>,
