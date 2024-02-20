@@ -16,6 +16,8 @@ const MAX_INTERNAL_NEURONS: usize = 4;
 pub struct Brain {
     connections: Vec<Connection>,
     internal_neurons: Vec<InternalNeuron>,
+
+    sensory_data: HashMap<SensoryNeuron, f64>
 }
 
 impl Brain {
@@ -51,8 +53,10 @@ impl Brain {
             .into_iter().map(|num| (num, 0)).collect();
         let mut neurons_output_count = neurons_input_count.clone();
 
+        let mut sensory_data = HashMap::new();
+        // Calculate neurons input/output AND list out all SensoryNeurons
         for conn in &connections {
-            Self::count_neuron_input_output(conn, &mut neurons_input_count, &mut neurons_output_count);
+            Self::analyze_conn(conn, &mut neurons_input_count, &mut neurons_output_count, &mut sensory_data);
         }
 
         let original_length = connections.len();
@@ -65,7 +69,8 @@ impl Brain {
 
         Brain {
             connections,
-            internal_neurons: vec![InternalNeuron::new(); MAX_INTERNAL_NEURONS]
+            internal_neurons: vec![InternalNeuron::new(); MAX_INTERNAL_NEURONS],
+            sensory_data
         }
     }
 
@@ -96,7 +101,7 @@ impl Brain {
         // If it's SensoryToInternal, then we need to check if the InternalNeuron has OUTPUT, not INPUT
         // Vice versa for InternalToAction
         // Very important to remember as the match statement here is an inverse of the
-        // count_neuron_input_output() function
+        // analyze_conn() function
         match conn.connection_type {
             ConnectionType::SensoryToInternal { sink, .. } => neurons_output_count.get(&sink) != Some(&0),
             ConnectionType::InternalToAction { source, .. } => neurons_input_count.get(&source) != Some(&0),
@@ -141,17 +146,23 @@ impl Brain {
 
     // Check each connections that has InternalNeuron
     // and mark whether it has valid input/output
-    fn count_neuron_input_output(
+    fn analyze_conn(
         conn: &Connection,
         neurons_input_count: &mut HashMap<InternalNeuronID, usize>,
-        neurons_output_count: &mut HashMap<InternalNeuronID, usize>
+        neurons_output_count: &mut HashMap<InternalNeuronID, usize>,
+        sensory_data: &mut HashMap<SensoryNeuron, f64>
     ) -> () {
 
         // Since the InternalNeuronID has been modulus to MAX_INTERNAL_NEURONS
         // we don't have to worry about non-existent key
         match conn.connection_type {
-            ConnectionType::SensoryToInternal { sink, .. } => {
+            ConnectionType::SensoryToAction { source, .. } => {
+                sensory_data.insert(source, 0.0);
+            },
+
+            ConnectionType::SensoryToInternal { source, sink } => {
                 *neurons_input_count.get_mut(&sink).unwrap() += 1;
+                sensory_data.insert(source, 0.0);
             },
 
             ConnectionType::InternalToAction { source, .. } => {
@@ -162,8 +173,10 @@ impl Brain {
             ConnectionType::InternalToInternal { source, sink } if source != sink => {
                 *neurons_output_count.get_mut(&source).unwrap() += 1;
                 *neurons_input_count.get_mut(&sink).unwrap() += 1;
-            },
+            }
 
+            // We still need this; InternalToInternal is ignored for loopbacks
+            // Making the match non-exhaustive
             _ => {}
         }
     }
