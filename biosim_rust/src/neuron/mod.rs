@@ -11,7 +11,7 @@ use action_neuron::{ActionNeuron, TOTAL_ACTION_NEURON_VARIANT};
 use internal_neuron::InternalNeuron;
 
 pub type InternalNeuronID = usize;
-const MAX_INTERNAL_NEURONS: usize = 3;
+const MAX_INTERNAL_NEURONS: usize = 5;
 
 pub struct Brain {
     connections: Vec<Connection>,
@@ -182,9 +182,9 @@ impl Connection {
         // bit 7-11 indicates sink ID
         // bit 12-15 indicates weight, a 4-bit signed integer
         let conn_type_id = gene >> 14;
-        let source_id = ((gene >> 9) & 32) as usize;
-        let sink_id = ((gene >> 4) & 32) as usize;
-        let weight: f64 = ((gene & 16) as i8 - 8).into();
+        let source_id = ((gene >> 9) & 0b11_11_1) as usize;
+        let sink_id = ((gene >> 4) & 0b11_11_1) as usize;
+        let weight: f64 = ((gene & 0xF) as i8 - 8).into();
 
         // This is kinda ugly, but it (might) work
         // Btw, should never EVER fail!
@@ -227,7 +227,7 @@ impl Connection {
     }
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub enum ConnectionType {
     SensoryToAction {source: SensoryNeuron, sink: ActionNeuron},
     SensoryToInternal {source: SensoryNeuron, sink: InternalNeuronID},
