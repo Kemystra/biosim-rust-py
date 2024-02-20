@@ -18,7 +18,7 @@ const FIELD_HEIGHT: usize = 50;
 
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let mut sim = Simulation::new(FIELD_WIDTH, FIELD_HEIGHT, 300, [0; 32], 4);
+    let mut sim = Simulation::new(FIELD_WIDTH, FIELD_HEIGHT, 300, [0; 32], 8);
 
     let gray = Color::new(0xaa, 0xaa, 0xaa);
     let light_orange = Color::new(0xff, 0xdd, 0x8c);
@@ -62,11 +62,12 @@ fn export_creatures_brain(sim: &Simulation) -> Result<(), Box<dyn Error>> {
 
 fn parse_connection(conn: &Connection) -> String {
     use ConnectionType::*;
+    let weight = conn.weight();
     match conn.connection_type() {
-        SensoryToAction { source, sink } => format!("0\t{:?}\t{:?}\n", source, sink),
-        SensoryToInternal { source, sink } => format!("1\t{:?}\t{:?}\n", source, sink),
-        InternalToInternal { source, sink } => format!("2\t{:?}\t{:?}\n", source, sink),
-        InternalToAction { source, sink } => format!("3\t{:?}\t{:?}\n", source, sink)
+        SensoryToAction { source, sink } => format!("0\t{:?}\t{:?}\t{}\n", source, sink, weight),
+        SensoryToInternal { source, sink } => format!("1\t{:?}\t{:?}\t{}\n", source, sink, weight),
+        InternalToInternal { source, sink } => format!("2\t{:?}\t{:?}\t{}\n", source, sink, weight),
+        InternalToAction { source, sink } => format!("3\t{:?}\t{:?}\t{}\n", source, sink, weight)
     }
 }
 
