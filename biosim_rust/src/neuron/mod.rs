@@ -180,6 +180,10 @@ impl Brain {
             _ => {}
         }
     }
+
+    pub fn collect_sensory_data(&mut self) {
+
+    }
 }
 
 pub struct Connection {

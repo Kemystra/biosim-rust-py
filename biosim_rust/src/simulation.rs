@@ -70,6 +70,12 @@ impl Simulation {
         Ok(())
     }
 
+    pub fn step(&mut self) -> () {
+        for c in self.creatures.iter_mut() {
+            c.think();
+        }
+    }
+
     pub fn creatures(&self) -> &Vec<Creature> {
         &self.creatures
     }

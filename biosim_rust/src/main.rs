@@ -31,11 +31,15 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     renderer.init()?;
     sim.init()?;
-    let raw_image_buffer = renderer.render(&sim);
-    let (buffer_width, buffer_height) = renderer.buffer_dimensions();
+
+    for _ in 0..20 {
+        sim.step();
+        let raw_image_buffer = renderer.render(&sim);
+        let (buffer_width, buffer_height) = renderer.buffer_dimensions();
+        export_to_tga(raw_image_buffer, buffer_width, buffer_height)?;
+    }
 
     export_creatures_brain(&sim)?;
-    export_to_tga(raw_image_buffer, buffer_width, buffer_height)?;
 
     Ok(())
 }

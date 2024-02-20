@@ -29,6 +29,10 @@ impl Creature {
         })
     }
 
+    pub fn think(&mut self) -> () {
+        self.brain.collect_sensory_data();
+    }
+
     pub fn position(&self) -> &Vector2D<usize> {
         &self.position
     }
