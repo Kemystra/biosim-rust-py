@@ -151,7 +151,7 @@ impl Brain {
         // Since the InternalNeuronID has been modulus to MAX_INTERNAL_NEURONS
         // we don't have to worry about non-existent key
         match conn.connection_type {
-            ConnectionType::SensoryToInternal { source, sink } => {
+            ConnectionType::SensoryToInternal { sink, .. } => {
                 *neurons_input_count.get_mut(&sink).unwrap() += 1;
             },
 
