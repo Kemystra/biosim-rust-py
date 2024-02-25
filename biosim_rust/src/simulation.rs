@@ -1,3 +1,4 @@
+use std::cell::{RefCell, Ref};
 use std::error::Error;
 use rand::{SeedableRng, RngCore};
 use rand::seq::SliceRandom;
@@ -18,7 +19,7 @@ pub struct Simulation {
     initial_total_creature: usize,
     total_genes: usize,
 
-    creatures: Vec<Creature>,
+    creatures: Vec<RefCell<Creature>>,
     rng: Pcg64
 }
 
@@ -64,7 +65,7 @@ impl Simulation {
                 creature_rng
             )?;
 
-            self.creatures.push(new_creature);
+            self.creatures.push(RefCell::new(new_creature));
         }
 
         Ok(())
@@ -76,8 +77,8 @@ impl Simulation {
         }
     }
 
-    pub fn creatures(&self) -> &Vec<Creature> {
-        &self.creatures
+    pub fn creatures_iter(&self) -> impl Iterator<Item=Ref<Creature>> {
+        self.creatures.iter().map(|c| c.borrow())
     }
 
     pub fn field_width(&self) -> usize {

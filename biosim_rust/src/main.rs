@@ -48,7 +48,7 @@ fn export_creatures_brain(sim: &Simulation) -> Result<(), Box<dyn Error>> {
     let mut file_writer = BufWriter::new(File::create("./output/brain.txt")?);
     let mut parsed_conns: String = "".to_string();
 
-    for (i, creature) in sim.creatures().iter().enumerate() {
+    for (i, creature) in sim.creatures_iter().enumerate() {
         file_writer.write(format!("Creature #{}\n", i).as_bytes())?;
 
         for conn in creature.brain().connections() {
