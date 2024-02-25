@@ -72,8 +72,9 @@ impl Simulation {
     }
 
     pub fn step(&mut self) -> () {
-        for c in self.creatures.iter_mut() {
-            c.think();
+        for creature_ref in &self.creatures {
+            let mut creature = creature_ref.borrow_mut();
+            creature.think(self);
         }
     }
 
