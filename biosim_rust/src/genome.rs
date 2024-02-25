@@ -2,7 +2,6 @@ use rand::SeedableRng;
 use thiserror::Error;
 
 use crate::renderer::Color;
-use crate::neuron::Brain;
 
 pub type Gene = u16;
 pub struct Genome(Vec<Gene>);
@@ -39,7 +38,7 @@ impl Genome {
             // If Genome has odd-numbered genes
             // XOR with 0
             // Yes some deref bullshit there
-            val ^= (self.0[i] as u32) | ((self.0.get(i+i).map_or(0, |x| *x) as u32) << 16);
+            val ^= (self.0[i] as u32) | ((self.0.get(i+1).map_or(0, |x| *x) as u32) << 16);
         }
 
         Ok(Color::from_xrgb_u32(val))
