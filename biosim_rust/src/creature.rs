@@ -4,7 +4,8 @@ use rand_chacha::ChaCha8Rng;
 
 use crate::genome::Genome;
 use crate::renderer::Color;
-use crate::neuron::{ConnectionType, Brain, sensory_neuron::SensoryNeuron};
+use crate::neuron::{ConnectionType, Brain, sensory_neuron};
+use sensory_neuron::SensoryNeuron;
 use crate::simulation::Simulation;
 use crate::vector2d::Vector2D;
 
@@ -45,6 +46,15 @@ impl Creature {
     }
 
     pub fn think(&mut self, sim: &Simulation) -> () {
+        // Read all sensory_data
+        // Note that here we cloned the keys (SensoryNeuron are just cheap enums)
+        // Cloning avoid the "mutable ref & immutable ref" problem
+        // that we had in Simulation
+        let keys: Vec<SensoryNeuron> = self.sensory_data.keys().cloned().collect();
+        for neuron in keys {
+            let value = sensory_neuron::read_sensor(neuron, self, sim);
+            self.sensory_data.insert(neuron, value);
+        }
     }
 
     pub fn position(&self) -> &Vector2D<usize> {
