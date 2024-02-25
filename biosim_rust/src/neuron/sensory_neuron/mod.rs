@@ -17,7 +17,7 @@ pub enum SensoryNeuron {
 
 // We need mutable ref. for Creature because using an RNG
 // will mutate it
-pub fn read_sensor(sensory_neuron: &SensoryNeuron, creature: &mut Creature, sim: &Simulation) -> f64 {
+pub fn read_sensor(sensory_neuron: SensoryNeuron, creature: &mut Creature, sim: &Simulation) -> f64 {
     // Every single sensory data MUST be between -1.0 and 1.0
     // Some sensory data might be between 0 and 1, and that's okay
     match sensory_neuron {
