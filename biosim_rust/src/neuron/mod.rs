@@ -70,8 +70,8 @@ impl Brain {
 
         let mut sensory_data = HashMap::new();
         let mut action_data = HashMap::new();
-        for conn in connections {
-            Self::gather_sensory_and_action_neurons(&conn, &mut sensory_data, &mut action_data);
+        for conn in connections.iter() {
+            Self::gather_sensory_and_action_neurons(conn, &mut sensory_data, &mut action_data);
         }
 
         Brain {
@@ -100,6 +100,8 @@ impl Brain {
             &ConnectionType::InternalToAction { sink, .. } => {
                 action_neuron_map.insert(sink, 0.0);
             }
+
+            _ => {}
         }
     }
 
