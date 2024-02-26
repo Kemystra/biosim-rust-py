@@ -1,11 +1,13 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
+use rand::Rng;
 
 pub mod internal_neuron;
 pub mod action_neuron;
 pub mod sensory_neuron;
 
-use crate::genome::{Gene, Genome};
+use crate::simulation::Simulation;
+use crate::{genome::{Gene, Genome}, creature::Creature};
 use sensory_neuron::{SensoryNeuron, TOTAL_SENSORY_NEURON_VARIANT};
 use action_neuron::{ActionNeuron, TOTAL_ACTION_NEURON_VARIANT};
 use internal_neuron::InternalNeuron;
@@ -16,6 +18,8 @@ const MAX_INTERNAL_NEURONS: usize = 4;
 pub struct Brain {
     connections: Vec<Connection>,
     internal_neurons: Vec<InternalNeuron>,
+    sensory_data: HashMap<SensoryNeuron, f64>,
+    action_data: HashMap<ActionNeuron, f64>,
 }
 
 impl Brain {
@@ -53,7 +57,7 @@ impl Brain {
 
         // Calculate neurons input/output
         for conn in &connections {
-            Self::analyze_conn(conn, &mut neurons_input_count, &mut neurons_output_count);
+            Self::count_conn_input_output(conn, &mut neurons_input_count, &mut neurons_output_count);
         }
 
         let original_length = connections.len();
@@ -64,9 +68,38 @@ impl Brain {
             &mut neurons_output_count
         );
 
+        let mut sensory_data = HashMap::new();
+        let mut action_data = HashMap::new();
+        for conn in connections {
+            Self::gather_sensory_and_action_neurons(&conn, &mut sensory_data, &mut action_data);
+        }
+
         Brain {
             connections,
             internal_neurons: vec![InternalNeuron::new(); MAX_INTERNAL_NEURONS],
+            sensory_data,
+            action_data
+        }
+    }
+
+    fn gather_sensory_and_action_neurons(
+        conn: &Connection,
+        sensory_neuron_map: &mut HashMap<SensoryNeuron, f64>,
+        action_neuron_map: &mut HashMap<ActionNeuron, f64>
+    ) -> () {
+        match conn.connection_type() {
+            &ConnectionType::SensoryToInternal { source, .. } => {
+                sensory_neuron_map.insert(source, 0.0);
+            }
+
+            &ConnectionType::SensoryToAction { source, sink } => {
+                sensory_neuron_map.insert(source, 0.0);
+                action_neuron_map.insert(sink, 0.0);
+            }
+
+            &ConnectionType::InternalToAction { sink, .. } => {
+                action_neuron_map.insert(sink, 0.0);
+            }
         }
     }
 
@@ -97,7 +130,7 @@ impl Brain {
         // If it's SensoryToInternal, then we need to check if the InternalNeuron has OUTPUT, not INPUT
         // Vice versa for InternalToAction
         // Very important to remember as the match statement here is an inverse of the
-        // analyze_conn() function
+        // count_conn_input_output() function
         match conn.connection_type {
             ConnectionType::SensoryToInternal { sink, .. } => neurons_output_count.get(&sink) != Some(&0),
             ConnectionType::InternalToAction { source, .. } => neurons_input_count.get(&source) != Some(&0),
@@ -142,7 +175,7 @@ impl Brain {
 
     // Check each connections that has InternalNeuron
     // and mark whether it has valid input/output
-    fn analyze_conn(
+    fn count_conn_input_output(
         conn: &Connection,
         neurons_input_count: &mut HashMap<InternalNeuronID, usize>,
         neurons_output_count: &mut HashMap<InternalNeuronID, usize>
@@ -169,6 +202,10 @@ impl Brain {
             // Making the match non-exhaustive
             _ => {}
         }
+    }
+
+    pub fn gather_sensory_data(&mut self, rng: &mut impl Rng, creature: &Creature, sim: &Simulation) {
+
     }
 }
 

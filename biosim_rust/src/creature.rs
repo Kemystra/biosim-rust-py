@@ -4,8 +4,9 @@ use rand_chacha::ChaCha8Rng;
 
 use crate::genome::Genome;
 use crate::renderer::Color;
-use crate::neuron::{ConnectionType, Brain, sensory_neuron};
+use crate::neuron::{ConnectionType, Brain, sensory_neuron, action_neuron};
 use sensory_neuron::SensoryNeuron;
+use action_neuron::ActionNeuron;
 use crate::simulation::Simulation;
 use crate::vector2d::Vector2D;
 
@@ -14,7 +15,6 @@ pub struct Creature {
     position: Vector2D<usize>,
     genome: Genome,
 
-    sensory_data: HashMap<SensoryNeuron, f64>,
     brain: Brain,
 
     color: Color,
@@ -26,35 +26,17 @@ impl Creature {
         let color = genome.generate_color()?;
         let brain = Brain::from_genome(&genome);
 
-        let mut sensory_data = HashMap::new();
-        for conn in brain.connections() {
-            match conn.connection_type() {
-                &ConnectionType::SensoryToAction { source, .. } |
-                &ConnectionType::SensoryToInternal { source, .. } => {sensory_data.insert(source, 0.0);},
-                _ => {}
-            };
-        }
-
         Ok(Self {
             position,
             genome,
             brain,
-            sensory_data,
             color,
             rng: unique_stream_rng
         })
     }
 
     pub fn think(&mut self, sim: &Simulation) -> () {
-        // Read all sensory_data
-        // Note that here we cloned the keys (SensoryNeuron are just cheap enums)
-        // Cloning avoid the "mutable ref & immutable ref" problem
-        // that we had in Simulation
-        let keys: Vec<SensoryNeuron> = self.sensory_data.keys().cloned().collect();
-        for neuron in keys {
-            let value = sensory_neuron::read_sensor(neuron, self, sim);
-            self.sensory_data.insert(neuron, value);
-        }
+        self.brain.gather_sensory_data(&mut self.rng, self, sim)
     }
 
     pub fn position(&self) -> &Vector2D<usize> {
