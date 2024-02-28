@@ -11,19 +11,23 @@ use action_neuron::ActionNeuron;
 use crate::simulation::Simulation;
 use crate::vector2d::Vector2D;
 
+pub type CreatureRng = ChaCha8Rng;
+
 
 pub struct Creature {
     position: Vector2D<usize>,
     genome: Genome,
 
     brain: Brain,
+    sensory_data: HashMap<SensoryNeuron, f64>,
+    action_data: HashMap<ActionNeuron, f64>,
 
     color: Color,
-    rng: ChaCha8Rng
+    rng: CreatureRng
 }
 
 impl Creature {
-    pub fn new(position: Vector2D<usize>, genome: Genome, unique_stream_rng: ChaCha8Rng) -> Result<Self, Box<dyn Error>> {
+    pub fn new(position: Vector2D<usize>, genome: Genome, unique_stream_rng: CreatureRng) -> Result<Self, Box<dyn Error>> {
         let color = genome.generate_color()?;
         let brain = Brain::from_genome(&genome);
 

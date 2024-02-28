@@ -3,9 +3,8 @@ use std::error::Error;
 use rand::{SeedableRng, RngCore};
 use rand::seq::SliceRandom;
 use rand_pcg::Pcg64;
-use rand_chacha::ChaCha8Rng;
 
-use crate::creature::Creature;
+use crate::creature::{Creature, CreatureRng};
 use crate::genome::Genome;
 use crate::vector2d::Vector2D;
 
@@ -55,7 +54,7 @@ impl Simulation {
         let mut creature_rng;
 
         for i in 0..self.initial_total_creature {
-            creature_rng = ChaCha8Rng::seed_from_u64(current_gen_seed);
+            creature_rng = CreatureRng::seed_from_u64(current_gen_seed);
             creature_rng.set_stream(i as u64);
             self.rng.fill_bytes(&mut genome_byte_array);
 
@@ -74,7 +73,7 @@ impl Simulation {
     pub fn step(&mut self) -> () {
         for creature_ref in &self.creatures {
             let mut creature = creature_ref.borrow_mut();
-            creature.think(self);
+            creature.gather_sensory_data(self);
         }
     }
 
