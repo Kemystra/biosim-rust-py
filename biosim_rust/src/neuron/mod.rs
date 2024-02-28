@@ -204,6 +204,14 @@ impl Brain {
             _ => {}
         }
     }
+
+    pub fn process_connections(
+        &mut self,
+        sensory_neuron_map: &HashMap<SensoryNeuron, f64>,
+        action_neuron_map: &mut HashMap<ActionNeuron, f64>
+    ) -> () {
+        
+    }
 }
 
 pub struct Connection {

@@ -74,6 +74,7 @@ impl Simulation {
         for creature_ref in &self.creatures {
             let mut creature = creature_ref.borrow_mut();
             creature.gather_sensory_data(self);
+            creature.think();
         }
     }
 

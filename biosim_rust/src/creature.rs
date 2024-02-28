@@ -67,6 +67,13 @@ impl Creature {
         }
     }
 
+    pub fn think(&mut self) {
+        self.brain.process_connections(
+            &self.sensory_data,
+            &mut self.action_data
+        );
+    }
+
     pub fn position(&self) -> &Vector2D<usize> {
         &self.position
     }
