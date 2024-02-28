@@ -90,16 +90,17 @@ mod tests {
     use rand::SeedableRng;
 
     use super::*;
+    use sensory_neuron::TOTAL_SENSORY_NEURON_VARIANT;
 
     fn gen_simulation() -> Simulation {
         Simulation::new(100, 100, 5, [0; 32], 10)
     }
 
     fn gen_creature() -> Creature {
-        let genome = Genome::from_byte_slice(&[0; 69]);
+        let genome = Genome::from_byte_slice(&[0; 20]);
         let brain = Brain::from_genome(&genome);
         Creature {
-            position: Vector2D::new(0, 0),
+            position: Vector2D::new(10, 4),
             genome,
 
             brain,
@@ -107,7 +108,27 @@ mod tests {
             action_data: HashMap::new(),
 
             color: Color::new(0, 0, 0),
-            rng: CreatureRng::from_entropy()
+            rng: CreatureRng::from_seed([0; 32])
         }
+    }
+
+    #[test]
+    fn test_gathering_sensory_data() -> () {
+        let mut creature = gen_creature();
+        let sim = gen_simulation();
+
+        for id in 0..TOTAL_SENSORY_NEURON_VARIANT {
+            creature.sensory_data.insert(SensoryNeuron::from_id(id).unwrap(), 0.0);
+        }
+
+        creature.gather_sensory_data(&sim);
+
+        let sensory_data = creature.sensory_data;
+        assert_eq!(sensory_data[&SensoryNeuron::Random], 0.6738395137652944);
+
+        assert_eq!(sensory_data[&SensoryNeuron::DistToBarrierNorth], 0.1);
+        assert_eq!(sensory_data[&SensoryNeuron::DistToBarrierSouth], 1.0 - 0.1);
+        assert_eq!(sensory_data[&SensoryNeuron::DistToBarrierWest], 0.04);
+        assert_eq!(sensory_data[&SensoryNeuron::DistToBarrierEast], 1.0 - 0.04);
     }
 }
