@@ -60,10 +60,10 @@ impl Creature {
         SensoryNeuron::Random => self.rng.gen_range(-1.0..=1.0),
 
         // This part gonna be hell lul
-        SensoryNeuron::DistToBarrierNorth => (self.position().y / sim.field_height()) as f64,
-        SensoryNeuron::DistToBarrierSouth => ((sim.field_height() - self.position().y) / sim.field_height()) as f64,
-        SensoryNeuron::DistToBarrierWest => (self.position().x / sim.field_width()) as f64,
-        SensoryNeuron::DistToBarrierEast => ((sim.field_width() - self.position().x) / sim.field_width()) as f64,
+        SensoryNeuron::DistToBarrierNorth => self.position().y as f64 / sim.field_height() as f64,
+        SensoryNeuron::DistToBarrierSouth => 1.0 - (self.position().y as f64 / sim.field_height() as f64),
+        SensoryNeuron::DistToBarrierWest => self.position().x as f64 / sim.field_width() as f64,
+        SensoryNeuron::DistToBarrierEast => 1.0 - (self.position().x as f64 / sim.field_width() as f64),
         }
     }
 
@@ -100,7 +100,7 @@ mod tests {
         let genome = Genome::from_byte_slice(&[0; 20]);
         let brain = Brain::from_genome(&genome);
         Creature {
-            position: Vector2D::new(10, 4),
+            position: Vector2D::new(4, 10),
             genome,
 
             brain,
