@@ -43,13 +43,13 @@ impl Genome {
 
         Ok(Color::from_xrgb_u32(val))
     }
-/*
+
     pub fn replicate<R: SeedableRng>(&mut self, rng: R) -> Self {
-
+        todo!()
     }
-*/
-    fn randomly_mutate<R: SeedableRng>(&mut self, rng: R) {
 
+    fn randomly_mutate<R: SeedableRng>(&mut self, rng: R) {
+        todo!()
     }
 }
 
