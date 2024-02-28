@@ -57,7 +57,7 @@ impl Creature {
     // Every single sensory data MUST be between -1.0 and 1.0
     // Some sensory data might be between 0 and 1, and that's okay
     match neuron {
-        SensoryNeuron::Random => self.rng_mut().gen_range(-1.0..=-1.0),
+        SensoryNeuron::Random => self.rng.gen_range(-1.0..=1.0),
 
         // This part gonna be hell lul
         SensoryNeuron::DistToBarrierNorth => (self.position().y / sim.field_height()) as f64,
@@ -124,7 +124,7 @@ mod tests {
         creature.gather_sensory_data(&sim);
 
         let sensory_data = creature.sensory_data;
-        assert_eq!(sensory_data[&SensoryNeuron::Random], 0.6738395137652944);
+        assert_eq!(sensory_data[&SensoryNeuron::Random], 0.6738395137652948);
 
         assert_eq!(sensory_data[&SensoryNeuron::DistToBarrierNorth], 0.1);
         assert_eq!(sensory_data[&SensoryNeuron::DistToBarrierSouth], 1.0 - 0.1);
