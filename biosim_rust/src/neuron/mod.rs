@@ -1,13 +1,11 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use rand::Rng;
 
 pub mod internal_neuron;
 pub mod action_neuron;
 pub mod sensory_neuron;
 
-use crate::simulation::Simulation;
-use crate::{genome::{Gene, Genome}, creature::Creature};
+use crate::genome::{Gene, Genome};
 use sensory_neuron::{SensoryNeuron, TOTAL_SENSORY_NEURON_VARIANT};
 use action_neuron::{ActionNeuron, TOTAL_ACTION_NEURON_VARIANT};
 use internal_neuron::InternalNeuron;
@@ -18,8 +16,6 @@ const MAX_INTERNAL_NEURONS: usize = 4;
 pub struct Brain {
     connections: Vec<Connection>,
     internal_neurons: Vec<InternalNeuron>,
-    sensory_data: HashMap<SensoryNeuron, f64>,
-    action_data: HashMap<ActionNeuron, f64>,
 }
 
 impl Brain {
@@ -68,18 +64,21 @@ impl Brain {
             &mut neurons_output_count
         );
 
-        let mut sensory_data = HashMap::new();
-        let mut action_data = HashMap::new();
-        for conn in connections.iter() {
-            Self::gather_sensory_and_action_neurons(conn, &mut sensory_data, &mut action_data);
-        }
-
         Brain {
             connections,
             internal_neurons: vec![InternalNeuron::new(); MAX_INTERNAL_NEURONS],
-            sensory_data,
-            action_data
         }
+    }
+
+    pub fn neurons_empty_value_map(&self) -> (HashMap<SensoryNeuron, f64>, HashMap<ActionNeuron, f64>) {
+        let mut sensory_neuron_map = HashMap::new();
+        let mut action_neuron_map = HashMap::new();
+
+        for conn in &self.connections {
+            Self::gather_sensory_and_action_neurons(&conn, &mut sensory_neuron_map, &mut action_neuron_map);
+        }
+
+        (sensory_neuron_map, action_neuron_map)
     }
 
     fn gather_sensory_and_action_neurons(
@@ -204,10 +203,6 @@ impl Brain {
             // Making the match non-exhaustive
             _ => {}
         }
-    }
-
-    pub fn gather_sensory_data(&mut self, rng: &mut impl Rng, creature: &Creature, sim: &Simulation) {
-
     }
 }
 
