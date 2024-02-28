@@ -77,4 +77,9 @@ mod tests {
     fn mutate_genome() {
         unimplemented!();
     }
+
+    #[test]
+    fn replicate_genome() {
+        unimplemented!();
+    }
 }
