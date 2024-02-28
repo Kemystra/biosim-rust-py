@@ -83,3 +83,31 @@ impl Creature {
         &mut self.rng
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use rand::SeedableRng;
+
+    use super::*;
+
+    fn gen_simulation() -> Simulation {
+        Simulation::new(100, 100, 5, [0; 32], 10)
+    }
+
+    fn gen_creature() -> Creature {
+        let genome = Genome::from_byte_slice(&[0; 69]);
+        let brain = Brain::from_genome(&genome);
+        Creature {
+            position: Vector2D::new(0, 0),
+            genome,
+
+            brain,
+            sensory_data: HashMap::new(),
+            action_data: HashMap::new(),
+
+            color: Color::new(0, 0, 0),
+            rng: CreatureRng::from_entropy()
+        }
+    }
+}
