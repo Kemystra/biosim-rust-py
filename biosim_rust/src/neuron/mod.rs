@@ -210,7 +210,38 @@ impl Brain {
         sensory_neuron_map: &HashMap<SensoryNeuron, f64>,
         action_neuron_map: &mut HashMap<ActionNeuron, f64>
     ) -> () {
-        
+        for conn in &self.connections {
+            Self::process_each_connection(conn, &mut self.internal_neurons, sensory_neuron_map, action_neuron_map);
+        }
+    }
+
+    fn process_each_connection(
+        conn: &Connection,
+        internal_neurons: &mut Vec<InternalNeuron>,
+        sensory_neuron_map: &HashMap<SensoryNeuron, f64>,
+        action_neuron_map: &mut HashMap<ActionNeuron, f64>
+    ) -> () {
+        match conn.connection_type {
+            ConnectionType::SensoryToAction { source, sink } => {
+                let value = sensory_neuron_map[&source] * conn.weight;
+                *action_neuron_map.get_mut(&sink).unwrap() += value;
+            }
+
+            ConnectionType::SensoryToInternal { source, sink } => {
+                let value = sensory_neuron_map[&source] * conn.weight;
+                internal_neurons[sink].activation_func(value);
+            }
+
+            ConnectionType::InternalToInternal { source, sink } => {
+                let value = internal_neurons[source].state() * conn.weight;
+                internal_neurons[sink].activation_func(value);
+            }
+
+            ConnectionType::InternalToAction { source, sink } => {
+                let value = internal_neurons[source].state() * conn.weight;
+                *action_neuron_map.get_mut(&sink).unwrap() += value;
+            }
+        }
     }
 }
 
