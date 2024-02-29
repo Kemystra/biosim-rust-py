@@ -44,26 +44,20 @@ impl Creature {
         })
     }
 
+    // Ugly nesting, but either this or cloning the keys/using RefCells
     pub fn gather_sensory_data(&mut self, sim: &Simulation) -> () {
-        let sensory_neurons: Vec<SensoryNeuron> = self.sensory_data.keys().cloned().collect();
-        let mut value: f64;
-        for neuron in sensory_neurons {
-            value = self.read_sensor(neuron, sim);
-            self.sensory_data.insert(neuron, value);
-        }
-    }
+        for (neuron, value) in self.sensory_data.iter_mut() {
+            // Every single sensory data MUST be between -1.0 and 1.0
+            // Some sensory data might be between 0 and 1, and that's okay
+            *value = match neuron {
+                SensoryNeuron::Random => self.rng.gen_range(-1.0..=1.0),
 
-    fn read_sensor(&mut self, neuron: SensoryNeuron, sim: &Simulation) -> f64 {
-    // Every single sensory data MUST be between -1.0 and 1.0
-    // Some sensory data might be between 0 and 1, and that's okay
-    match neuron {
-        SensoryNeuron::Random => self.rng.gen_range(-1.0..=1.0),
-
-        // This part gonna be hell lul
-        SensoryNeuron::DistToBarrierNorth => self.position().y as f64 / sim.field_height() as f64,
-        SensoryNeuron::DistToBarrierSouth => 1.0 - (self.position().y as f64 / sim.field_height() as f64),
-        SensoryNeuron::DistToBarrierWest => self.position().x as f64 / sim.field_width() as f64,
-        SensoryNeuron::DistToBarrierEast => 1.0 - (self.position().x as f64 / sim.field_width() as f64),
+                // This part gonna be hell lul
+                SensoryNeuron::DistToBarrierNorth => self.position.y as f64 / sim.field_height() as f64,
+                SensoryNeuron::DistToBarrierSouth => 1.0 - (self.position.y as f64 / sim.field_height() as f64),
+                SensoryNeuron::DistToBarrierWest => self.position.x as f64 / sim.field_width() as f64,
+                SensoryNeuron::DistToBarrierEast => 1.0 - (self.position.x as f64 / sim.field_width() as f64),
+            }
         }
     }
 
