@@ -362,4 +362,83 @@ mod tests {
         assert!(conn2 < conn3);
         assert!(conn3 < conn4);
     }
+
+    #[test]
+    fn test_processing_connections() {
+        let connection1 = Connection {
+            weight: 1.0,
+            connection_type: ConnectionType::SensoryToAction {
+                source: SensoryNeuron::Random,
+                sink: ActionNeuron::MoveNorth,
+            },
+        };
+
+        let connection2 = Connection {
+            weight: -3.0,
+            connection_type: ConnectionType::SensoryToInternal {
+                source: SensoryNeuron::Random,
+                sink: 0, // Replace with an actual InternalNeuronID
+            },
+        };
+
+        let connection3 = Connection {
+            weight: 5.0,
+            connection_type: ConnectionType::InternalToInternal {
+                source: 0, // Replace with an actual InternalNeuronID
+                sink: 1, // Replace with another InternalNeuronID
+            },
+        };
+
+        let connection4 = Connection {
+            weight: -2.0,
+            connection_type: ConnectionType::InternalToAction {
+                source: 1, // Replace with an actual InternalNeuronID
+                sink: ActionNeuron::MoveSouth,
+            },
+        };
+
+        let mut brain = Brain {
+            connections: vec![connection1, connection2, connection3, connection4],
+            internal_neurons: vec![InternalNeuron::new(); 2]
+        };
+
+        let mut sensory_neuron_map: HashMap<SensoryNeuron, f64> = HashMap::new();
+        let mut action_neuron_map: HashMap<ActionNeuron, f64> = HashMap::new();
+
+        sensory_neuron_map.insert(SensoryNeuron::Random, 0.5);
+        action_neuron_map.insert(ActionNeuron::MoveNorth, 0.0);
+        action_neuron_map.insert(ActionNeuron::MoveSouth, 0.0);
+
+        Brain::process_each_connection(
+            &brain.connections[0],
+            &mut brain.internal_neurons,
+            &sensory_neuron_map,
+            &mut action_neuron_map
+        );
+        assert_eq!(action_neuron_map[&ActionNeuron::MoveNorth], 0.5);
+
+        Brain::process_each_connection(
+            &brain.connections[1],
+            &mut brain.internal_neurons,
+            &sensory_neuron_map,
+            &mut action_neuron_map
+        );
+        assert_eq!(brain.internal_neurons[0].state(), -0.015);
+
+        Brain::process_each_connection(
+            &brain.connections[2],
+            &mut brain.internal_neurons,
+            &sensory_neuron_map,
+            &mut action_neuron_map
+        );
+        assert_eq!(brain.internal_neurons[1].state(), -0.00075);
+
+        Brain::process_each_connection(
+            &brain.connections[3],
+            &mut brain.internal_neurons,
+            &sensory_neuron_map,
+            &mut action_neuron_map
+        );
+        assert_eq!(action_neuron_map[&ActionNeuron::MoveSouth], 0.0015);
+    }
 }
