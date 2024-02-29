@@ -61,6 +61,39 @@ impl Creature {
         }
     }
 
+    pub fn execute_actions(&mut self, sim: &Simulation) {
+        let mut movement = Vector2D::new(0.0, 0.0);
+
+        let mut normalized_value: f64;
+        for (neuron, &value) in self.action_data.iter() {
+            normalized_value = (value.tanh() + 1.0) / 2.0;
+            match neuron {
+                ActionNeuron::MoveNorth => movement.y -= normalized_value,
+                ActionNeuron::MoveSouth => movement.y += normalized_value,
+                ActionNeuron::MoveEast => movement.x += normalized_value,
+                ActionNeuron::MoveWest => movement.x -= normalized_value,
+            }
+        }
+
+        // Moving creatures
+        // We see if the creature is 'determined' to move (using Rng), and move them 1 pixel in the
+        // desired direction
+        if movement.x != 0.0 || movement.y != 0.0 {
+            let mut new_position = self.position.clone();
+            if self.rng.gen_bool(movement.x.abs()) {
+                new_position.x += movement.x.signum() as usize;
+            }
+
+            if self.rng.gen_bool(movement.y.abs()) {
+                new_position.y += movement.y.signum() as usize;
+            }
+
+            if sim.position_available() {
+                self.position = new_position;
+            }
+        }
+    }
+
     pub fn think(&mut self) {
         self.brain.process_connections(
             &self.sensory_data,
