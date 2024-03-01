@@ -14,7 +14,8 @@ pub type RngSeed = [u8; 32];
 pub struct Simulation {
     field_width: usize,
     field_height: usize,
-    all_position_map: HashMap<Vector2D<usize>, bool>,
+    occupation_map: HashMap<Vector2D<usize>, bool>,
+    all_field_position: Vec<Vector2D<usize>>,
 
     initial_total_creature: usize,
     total_genes: usize,
@@ -28,16 +29,21 @@ impl Simulation {
         initial_total_creature: usize, seed: RngSeed,
         total_genes: usize) -> Self {
 
-        let mut all_position_map = HashMap::new();
+        let mut occupation_map = HashMap::new();
+        let mut all_field_position = vec![];
+        let mut pos: Vector2D<usize>;
         for x in 0..field_width {
             for y in 0..field_height {
-                all_position_map.insert(Vector2D::new(x, y), false);
+                pos = Vector2D::new(x, y);
+                all_field_position.push(pos);
+                occupation_map.insert(pos, false);
             }
         }
 
         Self {
             field_width, field_height,
-            all_position_map,
+            occupation_map,
+            all_field_position,
             creatures: vec![],
             initial_total_creature,
             total_genes,
@@ -46,16 +52,8 @@ impl Simulation {
     }
 
     pub fn init(&mut self) -> Result<(), Box<dyn Error>> {
-        let mut all_possible_coords = self.all_position_map
-            .keys()
-            .cloned()
-            .collect::<Vec<Vector2D<usize>>>()
+        let mut all_possible_coords = self.all_field_position
             .choose_multiple(&mut self.rng, self.initial_total_creature);
-
-        // Set the selected positions to occupied
-        for &coords in all_possible_coords {
-            self.all_position_map.insert(coords, true);
-        }
 
         let mut new_creature: Creature;
         // Gene is u16, so you need 2 u8 for each Gene
@@ -63,14 +61,18 @@ impl Simulation {
 
         let current_gen_seed = self.rng.next_u64();
         let mut creature_rng;
+        let mut current_position: Vector2D<usize>;
 
         for i in 0..self.initial_total_creature {
             creature_rng = CreatureRng::seed_from_u64(current_gen_seed);
             creature_rng.set_stream(i as u64);
             self.rng.fill_bytes(&mut genome_byte_array);
 
+            current_position = *all_possible_coords.next().unwrap();
+            self.occupation_map.insert(current_position, true);
+
             new_creature = Creature::new(
-                *all_possible_coords.next().unwrap(),
+                current_position,
                 Genome::from_byte_slice(&genome_byte_array),
                 creature_rng
             )?;
@@ -103,7 +105,7 @@ impl Simulation {
     }
 
     pub fn is_position_available(&self, pos: &Vector2D<usize>) -> bool {
-        self.all_position_map.get(pos).is_some_and(|x| *x)
+        self.occupation_map.get(pos).is_some_and(|x| *x)
     }
 }
 
