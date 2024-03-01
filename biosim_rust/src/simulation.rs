@@ -101,6 +101,10 @@ impl Simulation {
     pub fn field_height(&self) -> usize {
         self.field_height
     }
+
+    pub fn is_position_available(&self, pos: &Vector2D<usize>) -> bool {
+        self.all_position_map.get(pos).is_some_and(|x| *x)
+    }
 }
 
 
