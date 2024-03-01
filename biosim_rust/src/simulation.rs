@@ -109,6 +109,10 @@ impl Simulation {
     }
 }
 
+pub enum Signal {
+    PositionChanged { old: Vector2D<usize>, new: Vector2D<usize> }
+}
+
 
 #[cfg(test)]
 mod tests {
