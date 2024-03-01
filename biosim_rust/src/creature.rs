@@ -8,7 +8,7 @@ use crate::renderer::Color;
 use crate::neuron::{Brain, sensory_neuron, action_neuron};
 use sensory_neuron::SensoryNeuron;
 use action_neuron::ActionNeuron;
-use crate::simulation::Simulation;
+use crate::simulation::{Signal, Simulation};
 use crate::vector2d::Vector2D;
 
 pub type CreatureRng = ChaCha8Rng;
@@ -61,7 +61,8 @@ impl Creature {
         }
     }
 
-    pub fn execute_actions(&mut self, sim: &Simulation) {
+    pub fn execute_actions(&mut self, sim: &Simulation) -> Vec<Signal> {
+        let mut signals = vec![];
         let mut raw_movement_value = Vector2D::new(0.0, 0.0);
 
         let mut normalized_value: f64;
@@ -75,10 +76,14 @@ impl Creature {
             }
         }
 
-        self.process_raw_movement_value(raw_movement_value, sim);
+        if let Some(pos_change) = self.process_raw_movement_value(raw_movement_value, sim) {
+            signals.push(pos_change);
+        }
+
+        signals
     }
 
-    fn process_raw_movement_value(&mut self, value: Vector2D<f64>, sim: &Simulation) {
+    fn process_raw_movement_value(&mut self, value: Vector2D<f64>, sim: &Simulation) -> Option<Signal> {
         // We see if the creature is 'determined' to move (using Rng), and move them 1 pixel in the
         // desired direction
         let mut movement = Vector2D::new(0,0);
@@ -97,9 +102,13 @@ impl Creature {
         if movement != Vector2D::new(0, 0) {
             let new_position = self.position + movement;
             if !sim.is_position_occupied(&new_position) {
-                self.position = new_position;
+                return Some(
+                    Signal::PositionChanged { old: self.position, new: new_position }
+                );
             }
         }
+
+        None
     }
 
     pub fn think(&mut self) {
