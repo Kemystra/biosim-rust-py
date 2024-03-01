@@ -104,7 +104,7 @@ impl Simulation {
         self.field_height
     }
 
-    pub fn is_position_available(&self, pos: &Vector2D<usize>) -> bool {
+    pub fn is_position_occupied(&self, pos: &Vector2D<usize>) -> bool {
         self.occupation_map.get(pos).is_some_and(|x| *x)
     }
 }
@@ -124,5 +124,23 @@ mod tests {
     fn get_field_height() {
         let sim = Simulation::new(100,100,20,[0; 32], 4);
         assert_eq!(sim.field_height, 100);
+    }
+
+    #[test]
+    fn see_position_occupation() {
+        let creature = Creature::new(
+            Vector2D::new(100, 100),
+            Genome::from_byte_slice(&[0; 10]),
+            CreatureRng::from_entropy()
+        ).unwrap();
+
+        let mut sim = Simulation::new(200, 200, 1, [0;32], 4);
+        sim.creatures.push(RefCell::new(creature));
+        sim.occupation_map.insert(Vector2D::new(100, 100), true);
+
+        println!("{:?}", sim.creatures[0].borrow().position());
+
+        assert_eq!(sim.is_position_occupied(&Vector2D::new(100, 100)), true);
+        assert_eq!(sim.is_position_occupied(&Vector2D::new(10, 10)), false);
     }
 }

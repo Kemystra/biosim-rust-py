@@ -96,7 +96,7 @@ impl Creature {
 
         if movement != Vector2D::new(0, 0) {
             let new_position = self.position + movement;
-            if sim.is_position_available(&new_position) {
+            if !sim.is_position_occupied(&new_position) {
                 self.position = new_position;
             }
         }
