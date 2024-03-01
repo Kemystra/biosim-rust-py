@@ -62,33 +62,41 @@ impl Creature {
     }
 
     pub fn execute_actions(&mut self, sim: &Simulation) {
-        let mut movement = Vector2D::new(0.0, 0.0);
+        let mut raw_movement_value = Vector2D::new(0.0, 0.0);
 
         let mut normalized_value: f64;
         for (neuron, &value) in self.action_data.iter() {
             normalized_value = (value.tanh() + 1.0) / 2.0;
             match neuron {
-                ActionNeuron::MoveNorth => movement.y -= normalized_value,
-                ActionNeuron::MoveSouth => movement.y += normalized_value,
-                ActionNeuron::MoveEast => movement.x += normalized_value,
-                ActionNeuron::MoveWest => movement.x -= normalized_value,
+                ActionNeuron::MoveNorth => raw_movement_value.y -= normalized_value,
+                ActionNeuron::MoveSouth => raw_movement_value.y += normalized_value,
+                ActionNeuron::MoveEast => raw_movement_value.x += normalized_value,
+                ActionNeuron::MoveWest => raw_movement_value.x -= normalized_value,
             }
         }
 
-        // Moving creatures
+        self.process_raw_movement_value(raw_movement_value, sim);
+    }
+
+    fn process_raw_movement_value(&mut self, value: Vector2D<f64>, sim: &Simulation) {
         // We see if the creature is 'determined' to move (using Rng), and move them 1 pixel in the
         // desired direction
-        if movement.x != 0.0 || movement.y != 0.0 {
-            let mut new_position = self.position.clone();
-            if self.rng.gen_bool(movement.x.abs()) {
-                new_position.x += movement.x.signum() as usize;
+        let mut movement = Vector2D::new(0,0);
+        if value.x != 0.0 {
+            if self.rng.gen_bool(value.x.abs()) {
+                movement.x = value.x.signum() as usize;
             }
+        }
 
-            if self.rng.gen_bool(movement.y.abs()) {
-                new_position.y += movement.y.signum() as usize;
+        if value.y != 0.0 {
+            if self.rng.gen_bool(value.y.abs()) {
+                movement.y = value.y.signum() as usize;
             }
+        }
 
-            if sim.position_available() {
+        if movement != Vector2D::new(0, 0) {
+            let new_position = self.position + movement;
+            if sim.is_position_available(&new_position) {
                 self.position = new_position;
             }
         }
