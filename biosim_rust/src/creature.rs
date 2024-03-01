@@ -120,10 +120,6 @@ impl Creature {
     pub fn brain(&self) -> &Brain {
         &self.brain
     }
-
-    pub fn rng_mut(&mut self) -> &mut ChaCha8Rng {
-        &mut self.rng
-    }
 }
 
 
