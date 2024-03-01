@@ -2,7 +2,7 @@ use num::Num;
 
 use std::ops::{Add, Sub, Mul};
 
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 pub struct Vector2D<T> {
     pub x: T,
     pub y: T,
