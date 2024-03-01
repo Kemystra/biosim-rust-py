@@ -5,7 +5,7 @@ use rand_chacha::ChaCha8Rng;
 
 use crate::genome::Genome;
 use crate::renderer::Color;
-use crate::neuron::{ConnectionType, Brain, sensory_neuron, action_neuron};
+use crate::neuron::{Brain, sensory_neuron, action_neuron};
 use sensory_neuron::SensoryNeuron;
 use action_neuron::ActionNeuron;
 use crate::simulation::Simulation;
