@@ -14,7 +14,7 @@ pub type RngSeed = [u8; 32];
 pub struct Simulation {
     field_width: usize,
     field_height: usize,
-    occupation_map: HashMap<Vector2D<usize>, bool>,
+    occupancy_map: HashMap<Vector2D<usize>, bool>,
     all_field_position: Vec<Vector2D<usize>>,
 
     initial_total_creature: usize,
@@ -29,20 +29,20 @@ impl Simulation {
         initial_total_creature: usize, seed: RngSeed,
         total_genes: usize) -> Self {
 
-        let mut occupation_map = HashMap::new();
+        let mut occupancy_map = HashMap::new();
         let mut all_field_position = vec![];
         let mut pos: Vector2D<usize>;
         for x in 0..field_width {
             for y in 0..field_height {
                 pos = Vector2D::new(x, y);
                 all_field_position.push(pos);
-                occupation_map.insert(pos, false);
+                occupancy_map.insert(pos, false);
             }
         }
 
         Self {
             field_width, field_height,
-            occupation_map,
+            occupancy_map,
             all_field_position,
             creatures: RefCell::new(vec![]),
             initial_total_creature,
@@ -69,7 +69,7 @@ impl Simulation {
             self.rng.fill_bytes(&mut genome_byte_array);
 
             current_position = *all_possible_coords.next().unwrap();
-            self.occupation_map.insert(current_position, true);
+            self.occupancy_map.insert(current_position, true);
 
             new_creature = Creature::new(
                 current_position,
@@ -111,7 +111,7 @@ impl Simulation {
     }
 
     pub fn is_position_occupied(&self, pos: &Vector2D<usize>) -> bool {
-        self.occupation_map.get(pos).is_some_and(|x| *x)
+        self.occupancy_map.get(pos).is_some_and(|x| *x)
     }
 }
 
@@ -137,7 +137,7 @@ mod tests {
     }
 
     #[test]
-    fn see_position_occupation() {
+    fn see_position_occupancy() {
         let creature = Creature::new(
             Vector2D::new(100, 100),
             Genome::from_byte_slice(&[0; 10]),
@@ -146,7 +146,7 @@ mod tests {
 
         let mut sim = Simulation::new(200, 200, 1, [0;32], 4);
         sim.creatures.borrow_mut().push(creature);
-        sim.occupation_map.insert(Vector2D::new(100, 100), true);
+        sim.occupancy_map.insert(Vector2D::new(100, 100), true);
 
         println!("{:?}", sim.creatures.borrow()[0].position());
 
