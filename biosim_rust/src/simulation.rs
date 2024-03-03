@@ -102,6 +102,7 @@ impl Simulation {
 
     fn process_signals(&mut self, signals: Vec<Signal>) {
         for signal in signals {
+            println!("{:?}", signal);
             match signal {
                 Signal::PositionChanged { old, new } => self.update_occupancy_map(old, new)
             }
@@ -125,11 +126,16 @@ impl Simulation {
         self.field_height
     }
 
-    pub fn is_position_occupied(&self, pos: &Vector2D<usize>) -> bool {
-        self.occupancy_map.get(pos).is_some_and(|x| *x)
+    pub fn is_position_occupied(&self, pos: &Vector2D<usize>) -> Option<bool> {
+        if pos.x >= self.field_width || pos.y >= self.field_height {
+            return None;
+        }
+
+        Some(self.occupancy_map.get(pos).is_some_and(|x| *x))
     }
 }
 
+#[derive(Debug)]
 pub enum Signal {
     PositionChanged { old: Vector2D<usize>, new: Vector2D<usize> }
 }
