@@ -20,7 +20,7 @@ pub struct Simulation {
     initial_total_creature: usize,
     total_genes: usize,
 
-    creatures: Vec<RefCell<Creature>>,
+    creatures: RefCell<Vec<Creature>>,
     rng: Pcg64
 }
 
@@ -44,7 +44,7 @@ impl Simulation {
             field_width, field_height,
             occupation_map,
             all_field_position,
-            creatures: vec![],
+            creatures: RefCell::new(vec![]),
             initial_total_creature,
             total_genes,
             rng: Pcg64::from_seed(seed)
@@ -77,23 +77,29 @@ impl Simulation {
                 creature_rng
             )?;
 
-            self.creatures.push(RefCell::new(new_creature));
+            self.creatures.borrow_mut().push(new_creature);
         }
 
         Ok(())
     }
 
     pub fn step(&mut self) -> () {
-        for creature_ref in &self.creatures {
-            let mut creature = creature_ref.borrow_mut();
+        let mut signals: Vec<Signal>;
+        for creature in self.creatures.borrow_mut().iter() {
             creature.gather_sensory_data(self);
             creature.think();
-            creature.execute_actions(self);
+
+            signals = creature.execute_actions(self);
+            self.process_signals();
         }
     }
 
-    pub fn creatures_iter(&self) -> impl Iterator<Item=Ref<Creature>> {
-        self.creatures.iter().map(|c| c.borrow())
+    fn process_signals(&mut self) {
+
+    }
+
+    pub fn creatures(&self) -> Ref<Vec<Creature>> {
+        self.creatures.borrow()
     }
 
     pub fn field_width(&self) -> usize {
@@ -139,10 +145,10 @@ mod tests {
         ).unwrap();
 
         let mut sim = Simulation::new(200, 200, 1, [0;32], 4);
-        sim.creatures.push(RefCell::new(creature));
+        sim.creatures.borrow_mut().push(creature);
         sim.occupation_map.insert(Vector2D::new(100, 100), true);
 
-        println!("{:?}", sim.creatures[0].borrow().position());
+        println!("{:?}", sim.creatures.borrow()[0].position());
 
         assert_eq!(sim.is_position_occupied(&Vector2D::new(100, 100)), true);
         assert_eq!(sim.is_position_occupied(&Vector2D::new(10, 10)), false);
