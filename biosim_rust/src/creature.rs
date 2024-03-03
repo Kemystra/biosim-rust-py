@@ -97,10 +97,10 @@ impl Creature {
 
         if movement != Vector2D::new(0, 0) {
             let new_position = self.position + movement;
-            if !sim.is_position_occupied(&new_position) {
+            if let Some(false) = sim.is_position_occupied(&new_position) {
                 self.position = new_position;
                 return Some(
-                    Signal::PositionChanged { old: self.position, new: new_position }
+                    Signal::PositionChanged { old: self.position - movement, new: new_position }
                 );
             }
         }
@@ -191,7 +191,7 @@ mod tests {
         signal = creature.process_raw_movement_value(Vector2D::new(0.0, 0.0), &sim);
 
         assert!(signal.is_none());
-        assert_eq!(creature.position.x, 10);
-        assert_eq!(creature.position.y, 10);
+        assert_eq!(creature.position.x, 11);
+        assert_eq!(creature.position.y, 11);
     }
 }
