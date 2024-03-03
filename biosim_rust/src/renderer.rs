@@ -118,7 +118,7 @@ impl Renderer {
 
     pub fn render(&self, sim: &Simulation) -> Buffer {
         let mut buffer = self.empty_field_buffer.clone();
-        for c in sim.creatures_iter() {
+        for c in sim.creatures().iter() {
             let pos = c.position();
             // Simulation aren't aware that field coordinates is smaller than the whole buffer
             // Adding 1 helps to skip the border
