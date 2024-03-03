@@ -90,12 +90,21 @@ impl Simulation {
             creature.think();
 
             signals = creature.execute_actions(self);
-            self.process_signals();
+            self.process_signals(signals);
         }
     }
 
-    fn process_signals(&mut self) {
+    fn process_signals(&mut self, signals: Vec<Signal>) {
+        for signal in signals {
+            match signal {
+                Signal::PositionChanged { old, new } => self.update_occupancy_map(old, new)
+            }
+        }
+    }
 
+    fn update_occupancy_map(&mut self, old: Vector2D<usize>, new: Vector2D<usize>) {
+        self.occupancy_map.insert(old, false);
+        self.occupancy_map.insert(new, true);
     }
 
     pub fn creatures(&self) -> Ref<Vec<Creature>> {
