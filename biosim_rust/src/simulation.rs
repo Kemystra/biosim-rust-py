@@ -84,13 +84,19 @@ impl Simulation {
     }
 
     pub fn step(&mut self) -> () {
-        let mut signals: Vec<Signal>;
-        for creature in self.creatures.borrow_mut().iter() {
+        let mut all_signals = vec![];
+        for creature in self.creatures.borrow_mut().iter_mut() {
             creature.gather_sensory_data(self);
             creature.think();
 
-            signals = creature.execute_actions(self);
-            self.process_signals(signals);
+            let creature_signals = creature.execute_actions(self);
+            all_signals.push(creature_signals);
+        };
+
+        // The above loop uses immutable ref. to self, while processing signals requires a mutable
+        // access to self. We process it later, after all creatures have completed thinking.
+        for creature_signals in all_signals {
+            self.process_signals(creature_signals);
         }
     }
 
