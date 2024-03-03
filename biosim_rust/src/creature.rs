@@ -88,20 +88,17 @@ impl Creature {
         // desired direction
         let mut movement = Vector2D::new(0,0);
         if value.x != 0.0 {
-            if self.rng.gen_bool(value.x.abs()) {
-                movement.x = value.x.signum() as usize;
-            }
+            movement.x = value.x.signum() as usize;
         }
 
         if value.y != 0.0 {
-            if self.rng.gen_bool(value.y.abs()) {
-                movement.y = value.y.signum() as usize;
-            }
+            movement.y = value.y.signum() as usize;
         }
 
         if movement != Vector2D::new(0, 0) {
             let new_position = self.position + movement;
             if !sim.is_position_occupied(&new_position) {
+                self.position = new_position;
                 return Some(
                     Signal::PositionChanged { old: self.position, new: new_position }
                 );
