@@ -116,24 +116,27 @@ impl Renderer {
         Ok(())
     }
 
-    pub fn render(&self, sim: &Simulation) -> Buffer {
+    pub fn render(&self, sim: &Simulation) -> Result<Buffer, RendererError> {
         let mut buffer = self.empty_field_buffer.clone();
         for c in sim.creatures().iter() {
             let pos = c.position();
             // Simulation aren't aware that field coordinates is smaller than the whole buffer
             // Adding 1 helps to skip the border
-            self.plot_pixel(&mut buffer, pos.x+1, pos.y+1, c.color());
+            self.plot_pixel(&mut buffer, pos.x+1, pos.y+1, c.color())?;
         }
 
-        buffer
+        Ok(buffer)
     }
 
     pub fn buffer_dimensions(&self) -> (usize, usize) {
         (self.buffer_width, self.buffer_height)
     }
 
-    fn plot_pixel(&self, buffer: &mut Buffer, x: usize, y: usize, color: Color) {
-        buffer[x + (y*self.buffer_width)] = color;
+    fn plot_pixel(&self, buffer: &mut Buffer, x: usize, y: usize, color: Color) -> Result<(), RendererError> {
+        *buffer
+            .get_mut(x + (y*self.buffer_width))
+            .ok_or(RendererError::OutOfBufferRange(x, y))? = color;
+        Ok(())
     }
 }
 

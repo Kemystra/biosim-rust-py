@@ -32,11 +32,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     renderer.init()?;
     sim.init()?;
 
-    for _ in 0..20 {
+    for i in 0..20 {
         sim.step();
-        let raw_image_buffer = renderer.render(&sim);
+        let raw_image_buffer = renderer.render(&sim)?;
         let (buffer_width, buffer_height) = renderer.buffer_dimensions();
-        export_to_tga(raw_image_buffer, buffer_width, buffer_height)?;
+        export_to_tga(raw_image_buffer, buffer_width, buffer_height, i)?;
     }
 
     export_creatures_brain(&sim)?;
@@ -75,8 +75,8 @@ fn parse_connection(conn: &Connection) -> String {
     }
 }
 
-fn export_to_tga(buffer: Buffer, buffer_width: usize, buffer_height: usize) -> Result<(), Box<dyn Error>> {
-    let mut file_writer = BufWriter::new(File::create("./output/test.tga")?);
+fn export_to_tga(buffer: Buffer, buffer_width: usize, buffer_height: usize, index: usize) -> Result<(), Box<dyn Error>> {
+    let mut file_writer = BufWriter::new(File::create(format!("./output/test{}.tga", index))?);
     let mut header_data: [u8; 18] = [0; 18];
 
     // Image type: uncompressed true-color
