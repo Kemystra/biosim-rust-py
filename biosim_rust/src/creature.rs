@@ -178,4 +178,23 @@ mod tests {
         assert_eq!(sensory_data[&SensoryNeuron::DistToBarrierWest], 0.04);
         assert_eq!(sensory_data[&SensoryNeuron::DistToBarrierEast], 1.0 - 0.04);
     }
+
+    #[test]
+    fn test_processing_movement_data() {
+        let mut creature = gen_creature();
+        creature.position = Vector2D::new(10, 10);
+
+        let sim = gen_simulation();
+        let mut signal = creature.process_raw_movement_value(Vector2D::new(0.2, 0.8), &sim);
+
+        assert!(signal.is_some());
+        assert_eq!(creature.position.x, 11);
+        assert_eq!(creature.position.y, 11);
+
+        signal = creature.process_raw_movement_value(Vector2D::new(0.0, 0.0), &sim);
+
+        assert!(signal.is_none());
+        assert_eq!(creature.position.x, 10);
+        assert_eq!(creature.position.y, 10);
+    }
 }
